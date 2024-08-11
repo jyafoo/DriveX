@@ -1,6 +1,7 @@
 package com.atguigu.daijia.customer.service;
 
 import com.atguigu.daijia.model.entity.customer.CustomerInfo;
+import com.atguigu.daijia.model.form.customer.UpdateWxPhoneForm;
 import com.atguigu.daijia.model.vo.customer.CustomerLoginVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -21,4 +22,12 @@ public interface CustomerInfoService extends IService<CustomerInfo> {
      * @return CustomerLoginVo对象
      */
     CustomerLoginVo getCustomerLoginInfo(Long customerId);
+
+    /**
+     * 更新客户微信手机号码
+     *
+     * @param updateWxPhoneForm 包含微信手机号码更新信息的表单对象
+     * @return 返回一个Result对象，其中包含一个Boolean值，表示更新操作是否成功
+     */
+    Boolean updateWxPhoneNumber(UpdateWxPhoneForm updateWxPhoneForm);
 }

@@ -3,15 +3,13 @@ package com.atguigu.daijia.customer.controller;
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.customer.service.CustomerInfoService;
 import com.atguigu.daijia.model.entity.customer.CustomerInfo;
+import com.atguigu.daijia.model.form.customer.UpdateWxPhoneForm;
 import com.atguigu.daijia.model.vo.customer.CustomerLoginVo;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 用户信息控制层
@@ -65,6 +63,20 @@ public class CustomerInfoController {
     @GetMapping("/login/{code}")
     public Result<Long> login(@PathVariable String code){
         return Result.ok(customerInfoService.login(code));
+    }
+
+    /**
+     * 更新客户微信手机号码
+     * 该方法接收一个UpdateWxPhoneForm对象，该对象包含需要更新的客户微信手机号码信息，
+     * 并委托给customerInfoService进行更新操作
+     *
+     * @param updateWxPhoneForm 包含微信手机号码更新信息的表单对象
+     * @return 返回一个Result对象，其中包含一个Boolean值，表示更新操作是否成功
+     */
+    @Operation(summary = "更新客户微信手机号码")
+    @PostMapping("/updateWxPhoneNumber")
+    public Result<Boolean> updateWxPhoneNumber(@RequestBody UpdateWxPhoneForm updateWxPhoneForm) {
+        return Result.ok(customerInfoService.updateWxPhoneNumber(updateWxPhoneForm));
     }
 
 }
