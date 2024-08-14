@@ -1,6 +1,7 @@
 package com.atguigu.daijia.driver.service;
 
 import com.atguigu.daijia.model.entity.driver.DriverInfo;
+import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
 import com.atguigu.daijia.model.vo.driver.DriverLoginVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -23,4 +24,12 @@ public interface DriverInfoService extends IService<DriverInfo> {
      *         失败时，结果状态码非200，不包含司机登录信息对象
      */
     DriverLoginVo getDriverLoginInfo(Long driverId);
+
+    /**
+     * 获取司机的认证信息
+     *
+     * @param driverId 司机的ID
+     * @return 司机认证信息的结果对象
+     */
+    DriverAuthInfoVo getDriverAuthInfo(Long driverId);
 }
