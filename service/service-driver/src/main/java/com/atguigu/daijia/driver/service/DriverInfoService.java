@@ -1,6 +1,8 @@
 package com.atguigu.daijia.driver.service;
 
 import com.atguigu.daijia.model.entity.driver.DriverInfo;
+import com.atguigu.daijia.model.form.driver.DriverFaceModelForm;
+import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
 import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
 import com.atguigu.daijia.model.vo.driver.DriverLoginVo;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -32,4 +34,22 @@ public interface DriverInfoService extends IService<DriverInfo> {
      * @return 司机认证信息的结果对象
      */
     DriverAuthInfoVo getDriverAuthInfo(Long driverId);
+
+    /**
+     * 更新司机认证信息接口
+     * 该接口用于更新司机的认证信息，如驾驶证、行驶证等
+     *
+     * @param updateDriverAuthInfoForm 司机认证信息更新表单，包含需要更新的各项认证信息
+     * @return Boolean值，表示更新是否成功
+     */
+    Boolean updateDriverAuthInfo(UpdateDriverAuthInfoForm updateDriverAuthInfoForm);
+
+    /**
+     * 创建司机人脸模型接口
+     * 用于新人脸模型的创建，以便于后续的人脸识别操作
+     *
+     * @param driverFaceModelForm 包含司机人脸模型信息的请求体
+     * @return 布尔值，表示人脸模型创建是否成功
+     */
+    // Boolean creatDriverFaceModel(DriverFaceModelForm driverFaceModelForm);
 }

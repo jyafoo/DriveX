@@ -1,5 +1,6 @@
 package com.atguigu.daijia.driver.service;
 
+import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
 import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
 import com.atguigu.daijia.model.vo.driver.DriverLoginVo;
 
@@ -25,4 +26,13 @@ public interface DriverService {
      * @return 司机认证信息的结果对象
      */
     DriverAuthInfoVo getDriverAuthInfo(Long driverId);
+
+    /**
+     * 更新司机认证信息接口
+     * 该接口用于更新司机的认证信息，如驾驶证、行驶证等
+     *
+     * @param updateDriverAuthInfoForm 司机认证信息更新表单，包含需要更新的各项认证信息
+     * @return Boolean值，表示更新是否成功
+     */
+    Boolean updateDriverAuthInfo(UpdateDriverAuthInfoForm updateDriverAuthInfoForm);
 }

@@ -2,16 +2,15 @@ package com.atguigu.daijia.driver.controller;
 
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.driver.service.DriverInfoService;
+import com.atguigu.daijia.model.form.driver.DriverFaceModelForm;
+import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
 import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
 import com.atguigu.daijia.model.vo.driver.DriverLoginVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Tag(name = "司机API接口管理")
@@ -59,6 +58,32 @@ public class DriverInfoController {
     Result<DriverAuthInfoVo> getDriverAuthInfo(@PathVariable("driverId") Long driverId) {
         return Result.ok(driverInfoService.getDriverAuthInfo(driverId));
     }
+
+    /**
+     * 更新司机认证信息接口
+     * 该接口用于更新司机的认证信息，如驾驶证、行驶证等
+     *
+     * @param updateDriverAuthInfoForm 司机认证信息更新表单，包含需要更新的各项认证信息
+     * @return Boolean值，表示更新是否成功
+     */
+    @Operation(summary = "更新司机认证信息")
+    @PostMapping("/updateDriverAuthInfo")
+    public Result<Boolean> UpdateDriverAuthInfo(@RequestBody UpdateDriverAuthInfoForm updateDriverAuthInfoForm) {
+        return Result.ok(driverInfoService.updateDriverAuthInfo(updateDriverAuthInfoForm));
+    }
+
+    /**
+     * 创建司机人脸模型接口
+     * 用于新人脸模型的创建，以便于后续的人脸识别操作
+     *
+     * @param driverFaceModelForm 包含司机人脸模型信息的请求体
+     * @return 布尔值，表示人脸模型创建是否成功
+     */
+    /*@Operation(summary = "创建司机人脸模型")
+    @PostMapping("/creatDriverFaceModel")
+    public Result<Boolean> creatDriverFaceModel(@RequestBody DriverFaceModelForm driverFaceModelForm) {
+        return Result.ok(driverInfoService.creatDriverFaceModel(driverFaceModelForm));
+    }*/
 
 }
 

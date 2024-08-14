@@ -10,5 +10,5 @@ public class DriverFaceModelForm {
     private Long driverId;
 
     @Schema(description = "图片 base64 数据")
-    private String imageBase64 ;
+    private String imageBase64;
 }
