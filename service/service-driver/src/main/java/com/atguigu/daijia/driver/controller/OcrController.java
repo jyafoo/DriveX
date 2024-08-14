@@ -38,5 +38,17 @@ public class OcrController {
         return Result.ok(ocrService.idCardOcr(file));
     }
 
+    /**
+     * 驾驶证识别接口
+     *
+     * @param file 上传的驾驶证图片文件
+     * @return 识别后的驾驶证信息
+     */
+    @Operation(summary = "驾驶证识别")
+    @PostMapping("/driverLicenseOcr")
+    public Result<DriverLicenseOcrVo> driverLicenseOcr(@RequestPart("file") MultipartFile file) {
+        return Result.ok(ocrService.driverLicenseOcr(file));
+    }
+
 }
 

@@ -2,6 +2,7 @@ package com.atguigu.daijia.driver.service.impl;
 
 import com.atguigu.daijia.driver.client.OcrFeignClient;
 import com.atguigu.daijia.driver.service.OcrService;
+import com.atguigu.daijia.model.vo.driver.DriverLicenseOcrVo;
 import com.atguigu.daijia.model.vo.driver.IdCardOcrVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,5 +20,10 @@ public class OcrServiceImpl implements OcrService {
     @Override
     public IdCardOcrVo idCardOcr(MultipartFile file) {
         return ocrFeignClient.idCardOcr(file).getData();
+    }
+
+    @Override
+    public DriverLicenseOcrVo driverLicenseOcr(MultipartFile file) {
+        return ocrFeignClient.driverLicenseOcr(file).getData();
     }
 }

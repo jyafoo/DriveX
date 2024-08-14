@@ -1,5 +1,6 @@
 package com.atguigu.daijia.driver.service;
 
+import com.atguigu.daijia.model.vo.driver.DriverLicenseOcrVo;
 import com.atguigu.daijia.model.vo.driver.IdCardOcrVo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,4 +17,11 @@ public interface OcrService {
     IdCardOcrVo idCardOcr(MultipartFile file);
 
 
+    /**
+     * 驾驶证识别接口
+     *
+     * @param file 上传的驾驶证图片文件
+     * @return 识别后的驾驶证信息
+     */
+    DriverLicenseOcrVo driverLicenseOcr(MultipartFile file);
 }
