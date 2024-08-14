@@ -79,11 +79,11 @@ public class DriverInfoController {
      * @param driverFaceModelForm 包含司机人脸模型信息的请求体
      * @return 布尔值，表示人脸模型创建是否成功
      */
-    /*@Operation(summary = "创建司机人脸模型")
+    @Operation(summary = "创建司机人脸模型")
     @PostMapping("/creatDriverFaceModel")
     public Result<Boolean> creatDriverFaceModel(@RequestBody DriverFaceModelForm driverFaceModelForm) {
         return Result.ok(driverInfoService.creatDriverFaceModel(driverFaceModelForm));
-    }*/
+    }
 
 }
 

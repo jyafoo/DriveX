@@ -51,5 +51,5 @@ public interface DriverInfoService extends IService<DriverInfo> {
      * @param driverFaceModelForm 包含司机人脸模型信息的请求体
      * @return 布尔值，表示人脸模型创建是否成功
      */
-    // Boolean creatDriverFaceModel(DriverFaceModelForm driverFaceModelForm);
+    Boolean creatDriverFaceModel(DriverFaceModelForm driverFaceModelForm);
 }

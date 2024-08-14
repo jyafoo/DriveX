@@ -1,5 +1,6 @@
 package com.atguigu.daijia.driver.service;
 
+import com.atguigu.daijia.model.form.driver.DriverFaceModelForm;
 import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
 import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
 import com.atguigu.daijia.model.vo.driver.DriverLoginVo;
@@ -35,4 +36,12 @@ public interface DriverService {
      * @return Boolean值，表示更新是否成功
      */
     Boolean updateDriverAuthInfo(UpdateDriverAuthInfoForm updateDriverAuthInfoForm);
+
+    /**
+     * 创建司机人脸模型接口
+     *
+     * @param driverFaceModelForm 司机人脸模型表单数据，包含司机人脸信息及其他必要数据
+     * @return Boolean值，表示人脸模型创建是否成功
+     */
+    Boolean creatDriverFaceModel(DriverFaceModelForm driverFaceModelForm);
 }

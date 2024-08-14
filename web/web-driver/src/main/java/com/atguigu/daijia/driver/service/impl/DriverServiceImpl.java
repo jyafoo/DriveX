@@ -4,6 +4,7 @@ import com.atguigu.daijia.common.constant.RedisConstant;
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.driver.client.DriverInfoFeignClient;
 import com.atguigu.daijia.driver.service.DriverService;
+import com.atguigu.daijia.model.form.driver.DriverFaceModelForm;
 import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
 import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
 import com.atguigu.daijia.model.vo.driver.DriverLoginVo;
@@ -56,6 +57,11 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public Boolean updateDriverAuthInfo(UpdateDriverAuthInfoForm updateDriverAuthInfoForm) {
         return driverInfoFeignClient.updateDriverAuthInfo(updateDriverAuthInfoForm).getData();
+    }
+
+    @Override
+    public Boolean creatDriverFaceModel(DriverFaceModelForm driverFaceModelForm) {
+        return driverInfoFeignClient.creatDriverFaceModel(driverFaceModelForm).getData();
     }
 
 }
