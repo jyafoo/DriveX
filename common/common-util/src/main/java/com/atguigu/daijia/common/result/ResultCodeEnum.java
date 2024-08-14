@@ -24,6 +24,7 @@ public enum ResultCodeEnum {
     VALIDATECODE_ERROR(218 , "验证码错误"),
 
     LOGIN_AUTH(208, "未登陆"),
+    WX_CODE_ERROR(208,"小程序登录异常" ),
     PERMISSION(209, "没有权限"),
     ACCOUNT_ERROR(214, "账号不正确"),
     PASSWORD_ERROR(215, "密码不正确"),
@@ -44,8 +45,8 @@ public enum ResultCodeEnum {
 
     COUPON_EXPIRE( 250, "优惠券已过期"),
     COUPON_LESS( 250, "优惠券库存不足"),
-    COUPON_USER_LIMIT( 250, "超出领取数量"),
-    ;
+    COUPON_USER_LIMIT( 250, "超出领取数量");
+
 
     private Integer code;
 
