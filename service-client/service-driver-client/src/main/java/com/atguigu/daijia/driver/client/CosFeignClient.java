@@ -2,6 +2,7 @@ package com.atguigu.daijia.driver.client;
 
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.model.vo.driver.CosUploadVo;
+import com.atguigu.daijia.model.vo.driver.IdCardOcrVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,5 +21,4 @@ public interface CosFeignClient {
      */
     @PostMapping(value = "/cos/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Result<CosUploadVo> upload(@RequestPart("file") MultipartFile file, @RequestParam("path") String path);
-
 }
