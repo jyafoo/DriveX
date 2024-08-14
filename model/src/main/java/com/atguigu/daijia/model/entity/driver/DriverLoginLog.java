@@ -4,8 +4,12 @@ import com.atguigu.daijia.model.entity.base.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
 
+/**
+ * 司机登录日志实体
+ */
 @Data
 @Schema(description = "DriverLoginLog")
 @TableName("driver_login_log")

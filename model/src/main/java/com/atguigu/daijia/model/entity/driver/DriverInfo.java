@@ -4,11 +4,15 @@ import com.atguigu.daijia.model.entity.base.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * 司机用户信息实体
+ */
 @Data
 @Schema(description = "DriverInfo")
 @TableName("driver_info")
