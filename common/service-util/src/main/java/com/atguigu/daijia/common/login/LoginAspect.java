@@ -58,6 +58,11 @@ public class LoginAspect {
             AuthContextHolder.setUserId(Long.parseLong(userId));
         }
 
-        return joinPoint.proceed();
+        // 调用原始方法
+        Object res = joinPoint.proceed();
+
+        AuthContextHolder.removeUserId();
+
+        return res;
     }
 }
