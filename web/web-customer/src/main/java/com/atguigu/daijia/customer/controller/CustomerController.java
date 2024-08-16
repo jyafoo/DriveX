@@ -7,9 +7,12 @@ import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.common.result.ResultCodeEnum;
 import com.atguigu.daijia.common.util.AuthContextHolder;
 import com.atguigu.daijia.customer.service.CustomerService;
+import com.atguigu.daijia.customer.service.OrderService;
 import com.atguigu.daijia.model.entity.customer.CustomerInfo;
+import com.atguigu.daijia.model.form.customer.ExpectOrderForm;
 import com.atguigu.daijia.model.form.customer.UpdateWxPhoneForm;
 import com.atguigu.daijia.model.vo.customer.CustomerLoginVo;
+import com.atguigu.daijia.model.vo.customer.ExpectOrderVo;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 public class CustomerController {
     private final CustomerService customerService;
     private final RedisTemplate redisTemplate;
+
 
     /**
      * 小程序授权登录接口
@@ -80,6 +84,8 @@ public class CustomerController {
         updateWxPhoneForm.setCustomerId(1L/*AuthContextHolder.getUserId()*/);
         return Result.ok(customerService.updateWxPhoneNumber(updateWxPhoneForm));
     }
+
+
 
 
 }
