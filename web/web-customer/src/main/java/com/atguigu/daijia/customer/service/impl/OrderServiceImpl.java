@@ -49,8 +49,6 @@ public class OrderServiceImpl implements OrderService {
         return expectOrderVo;
     }
 
-
-
     @Override
     public Long submitOrder(SubmitOrderForm submitOrderForm) {
         // 因为做用户显示的时候并没有保存数据（没必要，用户不一定会下单），所以要重新计算一次
@@ -80,5 +78,10 @@ public class OrderServiceImpl implements OrderService {
         // TODO (JIA,2024/8/16,19:14) 启动任务调度
 
         return orderId;
+    }
+
+    @Override
+    public Integer getOrderStatus(Long orderId) {
+        return orderInfoFeignClient.getOrderStatus(orderId).getData();
     }
 }

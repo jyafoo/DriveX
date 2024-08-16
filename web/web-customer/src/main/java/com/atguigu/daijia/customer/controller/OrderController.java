@@ -47,12 +47,31 @@ public class OrderController {
         return Result.ok(orderService.expectOrder(expectOrderForm));
     }
 
+    /**
+     * 提交订单
+     * @param submitOrderForm 订单表单
+     * @return 订单id
+     */
     @Operation(summary = "乘客下单")
     @LoginCheck
     @PostMapping("/submitOrder")
     public Result<Long> submitOrder(@RequestBody SubmitOrderForm submitOrderForm) {
         submitOrderForm.setCustomerId(AuthContextHolder.getUserId());
         return Result.ok(orderService.submitOrder(submitOrderForm));
+    }
+
+    /**
+     * 查询订单状态
+     * 该方法需要用户登录权限，用于查询指定订单的状态
+     *
+     * @param orderId 订单ID，用于标识要查询的订单
+     * @return 订单状态
+     */
+    @Operation(summary = "查询订单状态")
+    @LoginCheck
+    @GetMapping("/getOrderStatus/{orderId}")
+    public Result<Integer> getOrderStatus(@PathVariable Long orderId) {
+        return Result.ok(orderService.getOrderStatus(orderId));
     }
 
 }

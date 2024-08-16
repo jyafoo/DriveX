@@ -17,5 +17,19 @@ public interface OrderService {
     ExpectOrderVo expectOrder(ExpectOrderForm expectOrderForm);
 
 
+    /**
+     * 提交订单
+     * @param submitOrderForm 订单表单
+     * @return 订单id
+     */
     Long submitOrder(SubmitOrderForm submitOrderForm);
+
+    /**
+     * 查询订单状态
+     * 该方法需要用户登录权限，用于查询指定订单的状态
+     *
+     * @param orderId 订单ID，用于标识要查询的订单
+     * @return 订单状态
+     */
+    Integer getOrderStatus(Long orderId);
 }

@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @Tag(name = "订单API接口管理")
@@ -31,6 +28,18 @@ public class OrderInfoController {
     @PostMapping("/saveOrderInfo")
     public Result<Long> saveOrderInfo(@RequestBody OrderInfoForm orderInfoForm) {
         return Result.ok(orderInfoService.saveOrderInfo(orderInfoForm));
+    }
+
+    /**
+     * 根据订单id获取订单状态
+     *
+     * @param orderId 订单的唯一标识符，用于查询订单状态
+     * @return 订单状态
+     */
+    @Operation(summary = "根据订单id获取订单状态")
+    @GetMapping("/getOrderStatus/{orderId}")
+    public Result<Integer> getOrderStatus(@PathVariable Long orderId) {
+        return Result.ok(orderInfoService.getOrderStatus(orderId));
     }
 
 }
