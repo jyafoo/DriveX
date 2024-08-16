@@ -501,7 +501,7 @@ CREATE TABLE `order_info` (
   `order_no` varchar(50) NOT NULL DEFAULT '' COMMENT '订单号',
   `start_location` varchar(200) NOT NULL DEFAULT '' COMMENT '起始地点',
   `start_point_longitude` decimal(10,7) NOT NULL DEFAULT '0.0000000' COMMENT '起始地点经度',
-  `start_point_latitude` decimal(10,7) NOT NULL DEFAULT '0.0000000' COMMENT '起始点伟度',
+  `start_point_latitude` decimal(10,7) NOT NULL DEFAULT '0.0000000' COMMENT '起始点纬度',
   `end_location` varchar(200) NOT NULL DEFAULT '' COMMENT '结束地点',
   `end_point_longitude` decimal(10,7) NOT NULL DEFAULT '0.0000000' COMMENT '结束地点经度',
   `end_point_latitude` decimal(10,7) NOT NULL DEFAULT '0.0000000' COMMENT '结束地点经度',
