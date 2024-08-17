@@ -2,6 +2,7 @@ package com.atguigu.daijia.driver.controller;
 
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.driver.service.DriverInfoService;
+import com.atguigu.daijia.model.entity.driver.DriverSet;
 import com.atguigu.daijia.model.form.driver.DriverFaceModelForm;
 import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
 import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
@@ -83,6 +84,18 @@ public class DriverInfoController {
     @PostMapping("/creatDriverFaceModel")
     public Result<Boolean> creatDriverFaceModel(@RequestBody DriverFaceModelForm driverFaceModelForm) {
         return Result.ok(driverInfoService.creatDriverFaceModel(driverFaceModelForm));
+    }
+
+    /**
+     * 根据司机ID获取司机设置信息
+     *
+     * @param driverId 司机ID，用于标识特定的司机
+     * @return DriverSet对象
+     */
+    @Operation(summary = "获取司机设置信息")
+    @GetMapping("/getDriverSet/{driverId}")
+    public Result<DriverSet> getDriverSet(@PathVariable Long driverId) {
+        return Result.ok(driverInfoService.getDriverSet(driverId));
     }
 
 }
