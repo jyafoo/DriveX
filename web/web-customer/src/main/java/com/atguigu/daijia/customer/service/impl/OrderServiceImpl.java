@@ -95,7 +95,7 @@ public class OrderServiceImpl implements OrderService {
         newOrderDispatchVo.setCreateTime(new Date());
         //远程调用
         Long jobId = newOrderFeignClient.addAndStartTask(newOrderDispatchVo).getData();
-
+        log.info("订单id为： {}，绑定任务id为：{}", orderId, jobId);
         return orderId;
     }
 

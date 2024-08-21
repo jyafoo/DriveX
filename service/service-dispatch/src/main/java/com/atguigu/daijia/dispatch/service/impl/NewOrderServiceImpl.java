@@ -23,6 +23,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -72,6 +73,7 @@ public class NewOrderServiceImpl implements NewOrderService {
     }
 
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void executeTask(long jobId) {
         // TODO (JIA,2024/8/21,20:06) 亮点三：通过xxl-job实现乘客下单搜索附近代驾司机（执行任务：搜索附近司机）
@@ -107,7 +109,7 @@ public class NewOrderServiceImpl implements NewOrderService {
             boolean isMember = redisTemplate.opsForSet().isMember(repeatKey, driver.getDriverId());
             if (!isMember) {
                 // 记录该订单已放入司机容器
-                redisTemplate.opsForSet().add(repeatKey,driver.getDriverId());
+                redisTemplate.opsForSet().add(repeatKey, driver.getDriverId());
                 // 过期时间：15分钟，新订单15分钟没人接单自动取消
                 redisTemplate.expire(
                         repeatKey,
@@ -128,11 +130,11 @@ public class NewOrderServiceImpl implements NewOrderService {
                 newOrderDataVo.setCreateTime(newOrderTaskVo.getCreateTime());
 
                 // 将消息保存到司机的临时队列里面，司机接单了会定时轮询到他的临时队列获取订单消息
-                String key = RedisConstant.DRIVER_ORDER_TEMP_LIST+driver.getDriverId();
+                String key = RedisConstant.DRIVER_ORDER_TEMP_LIST + driver.getDriverId();
 
                 redisTemplate.opsForList().leftPush(key, JSONObject.toJSONString(newOrderDataVo)); // 添加到指定的List的最左侧
-                //过期时间：1分钟，1分钟未消费，自动过期
-                //注：司机端开启接单，前端每5秒（远小于1分钟）拉取1次“司机临时队列”里面的新订单消息
+                // 过期时间：1分钟，1分钟未消费，自动过期
+                // 注：司机端开启接单，前端每5秒（远小于1分钟）拉取1次“司机临时队列”里面的新订单消息
                 redisTemplate.expire(
                         key,
                         RedisConstant.DRIVER_ORDER_TEMP_LIST_EXPIRES_TIME,
@@ -143,5 +145,29 @@ public class NewOrderServiceImpl implements NewOrderService {
         });
     }
 
+
+    @Override
+    public List<NewOrderDataVo> findNewOrderQueueData(Long driverId) {
+        List<NewOrderDataVo> list = new ArrayList<>();
+        String key = RedisConstant.DRIVER_ORDER_TEMP_LIST + driverId;
+        Long size = redisTemplate.opsForList().size(key);
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                String content = (String) redisTemplate.opsForList().leftPop(key);
+                NewOrderDataVo newOrderDataVo = JSONObject.parseObject(content, NewOrderDataVo.class);
+                list.add(newOrderDataVo);
+            }
+        }
+        return list;
+    }
+
+
+    @Override
+    public Boolean clearNewOrderQueueData(Long driverId) {
+        String key = RedisConstant.DRIVER_ORDER_TEMP_LIST + driverId;
+        // 直接删除，司机开启服务后，有新订单会自动创建容器
+        redisTemplate.delete(key);
+        return true;
+    }
 
 }
