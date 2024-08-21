@@ -53,6 +53,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public List<NearByDriverVo> searchNearByDriver(SearchNearByDriverForm searchNearByDriverForm) {
+        // TODO (JIA,2024/8/18,11:46) 亮点一：通过redis的geo实现搜索附近满足条件的司机
         // 搜索经纬度位置5公里以内的司机
         // 定义经纬度点
         Point point = new Point(searchNearByDriverForm.getLongitude().doubleValue(), searchNearByDriverForm.getLatitude().doubleValue());

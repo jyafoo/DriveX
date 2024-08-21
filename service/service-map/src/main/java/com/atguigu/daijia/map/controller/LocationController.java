@@ -48,7 +48,7 @@ public class LocationController {
         return Result.ok(locationService.removeDriverLocation(driverId));
     }
 
-    // TODO (JIA,2024/8/18,11:46) 亮点一：通过redis的geo实现搜索附近满足条件的司机
+
     /**
      * 搜索附近满足条件的司机
      *

@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+/**
+ *
+ */
 @Data
 @Schema(description = "订单任务关联表")
 @TableName("order_job")

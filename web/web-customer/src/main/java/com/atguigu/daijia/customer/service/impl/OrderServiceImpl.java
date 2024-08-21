@@ -1,6 +1,7 @@
 package com.atguigu.daijia.customer.service.impl;
 
 import com.atguigu.daijia.customer.service.OrderService;
+import com.atguigu.daijia.dispatch.client.NewOrderFeignClient;
 import com.atguigu.daijia.map.client.MapFeignClient;
 import com.atguigu.daijia.model.form.customer.ExpectOrderForm;
 import com.atguigu.daijia.model.form.customer.SubmitOrderForm;
@@ -8,6 +9,7 @@ import com.atguigu.daijia.model.form.map.CalculateDrivingLineForm;
 import com.atguigu.daijia.model.form.order.OrderInfoForm;
 import com.atguigu.daijia.model.form.rules.FeeRuleRequestForm;
 import com.atguigu.daijia.model.vo.customer.ExpectOrderVo;
+import com.atguigu.daijia.model.vo.dispatch.NewOrderTaskVo;
 import com.atguigu.daijia.model.vo.map.DrivingLineVo;
 import com.atguigu.daijia.model.vo.rules.FeeRuleResponseVo;
 import com.atguigu.daijia.order.client.OrderInfoFeignClient;
@@ -29,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
     private final MapFeignClient mapFeignClient;
     private final FeeRuleFeignClient feeRuleFeignClient;
     private final OrderInfoFeignClient orderInfoFeignClient;
+    private final NewOrderFeignClient newOrderFeignClient;
 
     @Override
     public ExpectOrderVo expectOrder(ExpectOrderForm expectOrderForm) {
@@ -75,7 +78,23 @@ public class OrderServiceImpl implements OrderService {
         //4.保存订单信息
         Long orderId = orderInfoFeignClient.saveOrderInfo(orderInfoForm).getData();
 
-        // TODO (JIA,2024/8/16,19:14) 启动任务调度
+        // TODO (JIA,2024/8/21,20:31) 亮点三：通过xxl-job实现乘客下单搜索附近代驾司机（启动任务调度）
+        //5、启动任务调度
+        NewOrderTaskVo newOrderDispatchVo = new NewOrderTaskVo();
+        newOrderDispatchVo.setOrderId(orderId);
+        newOrderDispatchVo.setStartLocation(orderInfoForm.getStartLocation());
+        newOrderDispatchVo.setStartPointLongitude(orderInfoForm.getStartPointLongitude());
+        newOrderDispatchVo.setStartPointLatitude(orderInfoForm.getStartPointLatitude());
+        newOrderDispatchVo.setEndLocation(orderInfoForm.getEndLocation());
+        newOrderDispatchVo.setEndPointLongitude(orderInfoForm.getEndPointLongitude());
+        newOrderDispatchVo.setEndPointLatitude(orderInfoForm.getEndPointLatitude());
+        newOrderDispatchVo.setExpectAmount(orderInfoForm.getExpectAmount());
+        newOrderDispatchVo.setExpectDistance(orderInfoForm.getExpectDistance());
+        newOrderDispatchVo.setExpectTime(drivingLineVo.getDuration());
+        newOrderDispatchVo.setFavourFee(orderInfoForm.getFavourFee());
+        newOrderDispatchVo.setCreateTime(new Date());
+        //远程调用
+        Long jobId = newOrderFeignClient.addAndStartTask(newOrderDispatchVo).getData();
 
         return orderId;
     }
