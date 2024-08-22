@@ -34,7 +34,32 @@ public class FeeRuleServiceImpl implements FeeRuleService {
 
     @Override
     public FeeRuleResponseVo calculateOrderFee(FeeRuleRequestForm calculateOrderFeeForm) {
-        // 封装传入对象
+        //封装传入对象
+        FeeRuleRequest feeRuleRequest = new FeeRuleRequest();
+        feeRuleRequest.setDistance(calculateOrderFeeForm.getDistance());
+        feeRuleRequest.setStartTime(new DateTime(calculateOrderFeeForm.getStartTime()).toString("HH:mm:ss"));
+        feeRuleRequest.setWaitMinute(calculateOrderFeeForm.getWaitMinute());
+        log.info("传入参数：{}", JSON.toJSONString(feeRuleRequest));
+
+        // 开启会话
+        KieSession kieSession = kieContainer.newKieSession();
+
+        //封装返回对象
+        FeeRuleResponse feeRuleResponse = new FeeRuleResponse();
+        kieSession.setGlobal("feeRuleResponse", feeRuleResponse);
+        // 设置订单对象
+        kieSession.insert(feeRuleRequest);
+        // 触发规则
+        kieSession.fireAllRules();
+        // 中止会话
+        kieSession.dispose();
+        log.info("计算结果：{}", JSON.toJSONString(feeRuleResponse));
+
+        //封装返回对象
+        FeeRuleResponseVo feeRuleResponseVo = new FeeRuleResponseVo();
+        BeanUtils.copyProperties(feeRuleResponse, feeRuleResponseVo);
+        return feeRuleResponseVo;
+        /*// 封装传入对象
         FeeRuleRequest feeRuleRequest = new FeeRuleRequest();
         feeRuleRequest.setDistance(calculateOrderFeeForm.getDistance());
         feeRuleRequest.setStartTime(new DateTime(calculateOrderFeeForm.getStartTime()).toString("HH:mm:ss"));
@@ -67,6 +92,6 @@ public class FeeRuleServiceImpl implements FeeRuleService {
         FeeRuleResponseVo feeRuleResponseVo = new FeeRuleResponseVo();
         BeanUtils.copyProperties(feeRuleResponse, feeRuleResponseVo);
 
-        return feeRuleResponseVo;
+        return feeRuleResponseVo;*/
     }
 }
