@@ -69,4 +69,12 @@ public interface DriverInfoService extends IService<DriverInfo> {
      * @return 司机是否进行过人脸识别
      */
     Boolean isFaceRecognition(Long driverId);
+
+    /**
+     * 验证司机的人脸信息
+     *
+     * @param driverFaceModelForm 司机人脸模型数据表单
+     * @return 布尔类型，表示人脸验证是否成功
+     */
+    Boolean verifyDriverFace(DriverFaceModelForm driverFaceModelForm);
 }
