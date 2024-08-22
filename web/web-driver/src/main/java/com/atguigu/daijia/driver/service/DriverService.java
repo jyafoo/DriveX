@@ -44,4 +44,12 @@ public interface DriverService {
      * @return Boolean值，表示人脸模型创建是否成功
      */
     Boolean creatDriverFaceModel(DriverFaceModelForm driverFaceModelForm);
+
+    /**
+     * 判断司机当日是否进行过人脸识别
+     *
+     * @param driverId 司机ID
+     * @return 司机是否进行过人脸识别
+     */
+    Boolean isFaceRecognition(Long driverId);
 }

@@ -92,5 +92,18 @@ public class DriverController {
         return Result.ok(driverService.creatDriverFaceModel(driverFaceModelForm));
     }
 
+    /**
+     * 判断司机当日是否进行过人脸识别
+     *
+     * @return 司机是否进行过人脸识别
+     */
+    @Operation(summary = "判断司机当日是否进行过人脸识别")
+    @LoginCheck
+    @GetMapping("/isFaceRecognition")
+    Result<Boolean> isFaceRecognition() {
+        Long driverId = AuthContextHolder.getUserId();
+        return Result.ok(driverService.isFaceRecognition(driverId));
+    }
+
 }
 

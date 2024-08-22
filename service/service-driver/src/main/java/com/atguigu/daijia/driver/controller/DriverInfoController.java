@@ -98,5 +98,17 @@ public class DriverInfoController {
         return Result.ok(driverInfoService.getDriverSet(driverId));
     }
 
+    /**
+     * 判断司机当日是否进行过人脸识别
+     *
+     * @param driverId 司机ID
+     * @return 司机是否进行过人脸识别
+     */
+    @Operation(summary = "判断司机当日是否进行过人脸识别")
+    @GetMapping("/isFaceRecognition/{driverId}")
+    Result<Boolean> isFaceRecognition(@PathVariable("driverId") Long driverId) {
+        return Result.ok(driverInfoService.isFaceRecognition(driverId));
+    }
+
 }
 
