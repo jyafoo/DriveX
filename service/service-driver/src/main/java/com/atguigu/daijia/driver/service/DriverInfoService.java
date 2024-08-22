@@ -77,4 +77,13 @@ public interface DriverInfoService extends IService<DriverInfo> {
      * @return 布尔类型，表示人脸验证是否成功
      */
     Boolean verifyDriverFace(DriverFaceModelForm driverFaceModelForm);
+
+    /**
+     * 更新接单状态
+     *
+     * @param driverId 司机ID
+     * @param status 新的接单状态
+     * @return 操作结果，包含一个布尔值表示更新是否成功
+     */
+    Boolean updateServiceStatus(Long driverId, Integer status);
 }

@@ -122,6 +122,19 @@ public class DriverInfoController {
         return Result.ok(driverInfoService.verifyDriverFace(driverFaceModelForm));
     }
 
+    /**
+     * 更新接单状态
+     *
+     * @param driverId 司机ID
+     * @param status 新的接单状态
+     * @return 操作结果，包含一个布尔值表示更新是否成功
+     */
+    @Operation(summary = "更新接单状态")
+    @GetMapping("/updateServiceStatus/{driverId}/{status}")
+    public Result<Boolean> updateServiceStatus(@PathVariable Long driverId, @PathVariable Integer status) {
+        return Result.ok(driverInfoService.updateServiceStatus(driverId, status));
+    }
+
 
 }
 
