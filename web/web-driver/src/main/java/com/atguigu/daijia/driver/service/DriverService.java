@@ -60,4 +60,19 @@ public interface DriverService {
      * @return 司机是否进行过人脸识别
      */
     Boolean verifyDriverFace(DriverFaceModelForm driverFaceModelForm);
+
+    /**
+     * 开始接单服务
+     *
+     * @param driverId 司机ID
+     * @return 操作结果，包含一个布尔值表示更新是否成功
+     */
+    Boolean startService(Long driverId);
+
+    /**
+     * 停止接单服务
+     *
+     * @return 操作结果，包含一个布尔值表示更新是否成功
+     */
+    Boolean stopService(Long driverId);
 }

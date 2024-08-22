@@ -119,5 +119,31 @@ public class DriverController {
         return Result.ok(driverService.verifyDriverFace(driverFaceModelForm));
     }
 
+    /**
+     * 开始接单服务
+     *
+     * @return 操作结果，包含一个布尔值表示更新是否成功
+     */
+    @Operation(summary = "开始接单服务")
+    @LoginCheck
+    @GetMapping("/startService")
+    public Result<Boolean> startService() {
+        Long driverId = AuthContextHolder.getUserId();
+        return Result.ok(driverService.startService(driverId));
+    }
+
+    /**
+     * 停止接单服务
+     *
+     * @return 操作结果，包含一个布尔值表示更新是否成功
+     */
+    @Operation(summary = "停止接单服务")
+    @LoginCheck
+    @GetMapping("/stopService")
+    public Result<Boolean> stopService() {
+        Long driverId = AuthContextHolder.getUserId();
+        return Result.ok(driverService.stopService(driverId));
+    }
+
 }
 
