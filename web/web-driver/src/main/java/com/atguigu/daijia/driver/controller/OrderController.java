@@ -54,16 +54,6 @@ public class OrderController {
         return Result.ok(orderService.findNewOrderQueueData(driverId));
     }
 
-    @Operation(summary = "查找司机端当前订单")
-    @LoginCheck
-    @GetMapping("/searchDriverCurrentOrder")
-    public Result<CurrentOrderInfoVo> searchDriverCurrentOrder() {
-        CurrentOrderInfoVo currentOrderInfoVo = new CurrentOrderInfoVo();
-        // TODO (JIA,2024/8/22,10:15) 先默认司机没有正在进行中的订单，后续优化
-        currentOrderInfoVo.setIsHasCurrentOrder(false);
-        return Result.ok(currentOrderInfoVo);
-    }
-
     /**
      * 司机抢单接口
      * 此接口允许已登录的司机用户尝试抢夺指定的订单
@@ -80,6 +70,18 @@ public class OrderController {
         return Result.ok(orderService.robNewOrder(driverId, orderId));
     }
 
+    /**
+     * 根据司机ID查询当前正在进行的订单详情
+     *
+     * @return 返回当前订单的信息封装在Result对象中
+     */
+    @Operation(summary = "司机端查找当前订单")
+    @LoginCheck
+    @GetMapping("/searchDriverCurrentOrder")
+    public Result<CurrentOrderInfoVo> searchDriverCurrentOrder() {
+        Long driverId = AuthContextHolder.getUserId();
+        return Result.ok(orderService.searchDriverCurrentOrder(driverId));
+    }
 
 }
 

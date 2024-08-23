@@ -1,5 +1,6 @@
 package com.atguigu.daijia.driver.service;
 
+import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.NewOrderDataVo;
 
 import java.util.List;
@@ -32,4 +33,12 @@ public interface OrderService {
      * @return 抢单操作的结果，包含一个布尔值，true表示抢单成功，false表示抢单失败
      */
     Boolean robNewOrder(Long driverId, Long orderId);
+
+    /**
+     * 根据司机ID查询当前正在进行的订单详情
+     *
+     * @param driverId 司机的唯一标识ID
+     * @return 返回当前订单的信息封装在Result对象中
+     */
+    CurrentOrderInfoVo searchDriverCurrentOrder(Long driverId);
 }

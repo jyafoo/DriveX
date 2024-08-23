@@ -67,5 +67,17 @@ public class OrderInfoController {
     public Result<CurrentOrderInfoVo> searchCustomerCurrentOrder(@PathVariable Long customerId) {
         return Result.ok(orderInfoService.searchCustomerCurrentOrder(customerId));
     }
+
+    /**
+     * 根据司机ID查询当前正在进行的订单详情
+     *
+     * @param driverId 司机的唯一标识ID
+     * @return 返回当前订单的信息封装在Result对象中
+     */
+    @Operation(summary = "司机端查找当前订单")
+    @GetMapping("/searchDriverCurrentOrder/{driverId}")
+    public Result<CurrentOrderInfoVo> searchDriverCurrentOrder(@PathVariable Long driverId) {
+        return Result.ok(orderInfoService.searchDriverCurrentOrder(driverId));
+    }
 }
 

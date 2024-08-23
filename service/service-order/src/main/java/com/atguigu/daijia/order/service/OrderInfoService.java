@@ -39,4 +39,12 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 返回当前订单的信息对象封装在Result中
      */
     CurrentOrderInfoVo searchCustomerCurrentOrder(Long customerId);
+
+    /**
+     * 根据司机ID查询当前正在进行的订单详情
+     *
+     * @param driverId 司机的唯一标识ID
+     * @return 返回当前订单的信息封装在Result对象中
+     */
+    CurrentOrderInfoVo searchDriverCurrentOrder(Long driverId);
 }

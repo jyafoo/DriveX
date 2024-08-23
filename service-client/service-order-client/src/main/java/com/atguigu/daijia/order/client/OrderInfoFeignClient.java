@@ -46,4 +46,12 @@ public interface OrderInfoFeignClient {
      */
     @GetMapping("/order/info/searchCustomerCurrentOrder/{customerId}")
     Result<CurrentOrderInfoVo> searchCustomerCurrentOrder(@PathVariable("customerId") Long customerId);
+
+    /**
+     * 司机端查找当前订单
+     * @param driverId
+     * @return
+     */
+    @GetMapping("/order/info/searchDriverCurrentOrder/{driverId}")
+    Result<CurrentOrderInfoVo> searchDriverCurrentOrder(@PathVariable("driverId") Long driverId);
 }
