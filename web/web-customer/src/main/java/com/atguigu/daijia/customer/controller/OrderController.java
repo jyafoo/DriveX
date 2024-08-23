@@ -24,16 +24,6 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
 
     private final OrderService orderService;
-    @Operation(summary = "查找乘客端当前订单")
-    @LoginCheck
-    @GetMapping("/searchCustomerCurrentOrder")
-    public Result<CurrentOrderInfoVo> searchCustomerCurrentOrder() {
-        CurrentOrderInfoVo currentOrderInfoVo = new CurrentOrderInfoVo();
-        // TODO (JIA,2024/8/15,12:41) 后续完善，先假设乘客没有正在进行中的订单
-        currentOrderInfoVo.setIsHasCurrentOrder(false);
-        return Result.ok(currentOrderInfoVo);
-    }
-
 
     /**
      * 预估订单数据
@@ -73,6 +63,19 @@ public class OrderController {
     @GetMapping("/getOrderStatus/{orderId}")
     public Result<Integer> getOrderStatus(@PathVariable Long orderId) {
         return Result.ok(orderService.getOrderStatus(orderId));
+    }
+
+    /**
+     * 根据乘客ID查询当前正在进行的订单信息
+     *
+     * @return 返回当前订单的信息对象封装在Result中
+     */
+    @Operation(summary = "乘客端查找当前订单")
+    @LoginCheck
+    @GetMapping("/searchCustomerCurrentOrder")
+    public Result<CurrentOrderInfoVo> searchCustomerCurrentOrder() {
+        Long customerId = AuthContextHolder.getUserId();
+        return Result.ok(orderService.searchCustomerCurrentOrder(customerId));
     }
 
 }

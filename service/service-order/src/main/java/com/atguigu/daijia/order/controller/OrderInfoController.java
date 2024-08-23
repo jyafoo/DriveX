@@ -2,6 +2,7 @@ package com.atguigu.daijia.order.controller;
 
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.model.form.order.OrderInfoForm;
+import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.order.service.OrderInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -53,6 +54,18 @@ public class OrderInfoController {
     @GetMapping("/robNewOrder/{driverId}/{orderId}")
     public Result<Boolean> robNewOrder(@PathVariable Long driverId, @PathVariable Long orderId) {
         return Result.ok(orderInfoService.robNewOrder(driverId, orderId));
+    }
+
+    /**
+     * 根据乘客ID查询当前正在进行的订单信息
+     *
+     * @param customerId 乘客的唯一标识ID
+     * @return 返回当前订单的信息对象封装在Result中
+     */
+    @Operation(summary = "乘客端查找当前订单")
+    @GetMapping("/searchCustomerCurrentOrder/{customerId}")
+    public Result<CurrentOrderInfoVo> searchCustomerCurrentOrder(@PathVariable Long customerId) {
+        return Result.ok(orderInfoService.searchCustomerCurrentOrder(customerId));
     }
 }
 
