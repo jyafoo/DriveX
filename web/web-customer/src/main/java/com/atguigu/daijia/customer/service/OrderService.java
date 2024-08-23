@@ -4,6 +4,7 @@ import com.atguigu.daijia.model.form.customer.ExpectOrderForm;
 import com.atguigu.daijia.model.form.customer.SubmitOrderForm;
 import com.atguigu.daijia.model.vo.customer.ExpectOrderVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
+import com.atguigu.daijia.model.vo.order.OrderInfoVo;
 
 public interface OrderService {
 
@@ -41,4 +42,13 @@ public interface OrderService {
      * @return 返回当前订单的信息对象封装在Result中
      */
     CurrentOrderInfoVo searchCustomerCurrentOrder(Long customerId);
+
+    /**
+     * 乘客端获取订单信息
+     * 该方法需要用户登录认证
+     *
+     * @param orderId 订单ID
+     * @return 返回订单信息的封装对象
+     */
+    OrderInfoVo getOrderInfo(Long orderId, Long customerId);
 }

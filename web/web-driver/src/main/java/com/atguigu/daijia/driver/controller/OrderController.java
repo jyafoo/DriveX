@@ -6,6 +6,7 @@ import com.atguigu.daijia.common.util.AuthContextHolder;
 import com.atguigu.daijia.driver.service.OrderService;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.NewOrderDataVo;
+import com.atguigu.daijia.model.vo.order.OrderInfoVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -81,6 +82,21 @@ public class OrderController {
     public Result<CurrentOrderInfoVo> searchDriverCurrentOrder() {
         Long driverId = AuthContextHolder.getUserId();
         return Result.ok(orderService.searchDriverCurrentOrder(driverId));
+    }
+
+    /**
+     * 司机端获取订单信息
+     * 此方法主要用于获取特定司机承接的订单详细信息，旨在支持订单跟踪和管理功能
+     *
+     * @param orderId 订单的唯一标识，用于定位特定的订单记录
+     * @return 返回一个OrderInfoVo对象，包含了订单的详细信息，包括但不限于订单状态、乘客信息、行程详情等
+     */
+    @Operation(summary = "获取订单账单详细信息")
+    @LoginCheck
+    @GetMapping("/getOrderInfo/{orderId}")
+    public Result<OrderInfoVo> getOrderInfo(@PathVariable Long orderId) {
+        Long driverId = AuthContextHolder.getUserId();
+        return Result.ok(orderService.getOrderInfo(orderId, driverId));
     }
 
 }

@@ -8,6 +8,7 @@ import com.atguigu.daijia.model.form.customer.ExpectOrderForm;
 import com.atguigu.daijia.model.form.customer.SubmitOrderForm;
 import com.atguigu.daijia.model.vo.customer.ExpectOrderVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
+import com.atguigu.daijia.model.vo.order.OrderInfoVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -76,6 +77,21 @@ public class OrderController {
     public Result<CurrentOrderInfoVo> searchCustomerCurrentOrder() {
         Long customerId = AuthContextHolder.getUserId();
         return Result.ok(orderService.searchCustomerCurrentOrder(customerId));
+    }
+
+    /**
+     * 乘客端获取订单信息
+     * 该方法需要用户登录认证
+     *
+     * @param orderId 订单ID
+     * @return 返回订单信息的封装对象
+     */
+    @Operation(summary = "乘客端获取订单信息")
+    @LoginCheck
+    @GetMapping("/getOrderInfo/{orderId}")
+    public Result<OrderInfoVo> getOrderInfo(@PathVariable Long orderId) {
+        Long customerId = AuthContextHolder.getUserId();
+        return Result.ok(orderService.getOrderInfo(orderId, customerId));
     }
 
 }

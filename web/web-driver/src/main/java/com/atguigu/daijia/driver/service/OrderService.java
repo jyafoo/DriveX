@@ -2,6 +2,7 @@ package com.atguigu.daijia.driver.service;
 
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.NewOrderDataVo;
+import com.atguigu.daijia.model.vo.order.OrderInfoVo;
 
 import java.util.List;
 
@@ -41,4 +42,14 @@ public interface OrderService {
      * @return 返回当前订单的信息封装在Result对象中
      */
     CurrentOrderInfoVo searchDriverCurrentOrder(Long driverId);
+
+    /**
+     * 司机端获取订单信息
+     * 此方法主要用于获取特定司机承接的订单详细信息，旨在支持订单跟踪和管理功能
+     *
+     * @param orderId 订单的唯一标识，用于定位特定的订单记录
+     * @param driverId 司机的唯一标识，用于关联订单与服务司机
+     * @return 返回一个OrderInfoVo对象，包含了订单的详细信息，包括但不限于订单状态、乘客信息、行程详情等
+     */
+    OrderInfoVo getOrderInfo(Long orderId, Long driverId);
 }
