@@ -42,5 +42,17 @@ public class OrderInfoController {
         return Result.ok(orderInfoService.getOrderStatus(orderId));
     }
 
+    /**
+     * 司机抢单接口
+     *
+     * @param driverId 抢单司机的唯一标识ID
+     * @param orderId 待抢订单的唯一标识ID
+     * @return 抢单操作是否成功的标识
+     */
+    @Operation(summary = "司机抢单")
+    @GetMapping("/robNewOrder/{driverId}/{orderId}")
+    public Result<Boolean> robNewOrder(@PathVariable Long driverId, @PathVariable Long orderId) {
+        return Result.ok(orderInfoService.robNewOrder(driverId, orderId));
+    }
 }
 

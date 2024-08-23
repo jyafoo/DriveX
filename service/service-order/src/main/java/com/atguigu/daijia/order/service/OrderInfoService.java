@@ -21,4 +21,13 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 订单状态
      */
     Integer getOrderStatus(Long orderId);
+
+    /**
+     * 司机抢单接口
+     *
+     * @param driverId 抢单司机的唯一标识ID
+     * @param orderId 待抢订单的唯一标识ID
+     * @return 抢单操作是否成功的标识
+     */
+    Boolean robNewOrder(Long driverId, Long orderId);
 }

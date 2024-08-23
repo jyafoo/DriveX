@@ -35,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ExpectOrderVo expectOrder(ExpectOrderForm expectOrderForm) {
+        // TODO (JIA,2024/8/18,11:47) 亮点二：通过Drools规则引擎预估乘客的订单数据（价格）
         // 计算路线
         CalculateDrivingLineForm calculateDrivingLineForm = new CalculateDrivingLineForm();
         BeanUtils.copyProperties(expectOrderForm,calculateDrivingLineForm);
