@@ -111,5 +111,19 @@ public class OrderController {
         return Result.ok(orderService.calculateDrivingLine(calculateDrivingLineForm));
     }
 
+    /**
+     * 司机到达代驾起始地点接口
+     *
+     * @param orderId 代驾订单ID，用于标识特定的代驾订单
+     * @return 表示司机是否成功确认到达起始地点
+     */
+    @Operation(summary = "司机到达代驾起始地点")
+    @LoginCheck
+    @GetMapping("/driverArriveStartLocation/{orderId}")
+    public Result<Boolean> driverArriveStartLocation(@PathVariable Long orderId) {
+        Long driverId = AuthContextHolder.getUserId();
+        return Result.ok(orderService.driverArriveStartLocation(orderId, driverId));
+    }
+
 }
 

@@ -92,5 +92,19 @@ public class OrderInfoController {
     public Result<OrderInfo> getOrderInfo(@PathVariable Long orderId) {
         return Result.ok(orderInfoService.getById(orderId));
     }
+
+    /**
+     * 司机到达起始点接口
+     * 该接口用于记录司机到达订单起始点的状态
+     *
+     * @param orderId 订单ID
+     * @param driverId 司机ID
+     * @return 返回一个结果对象，包含一个布尔值，指示司机是否成功到达起始点
+     */
+    @Operation(summary = "司机到达起始点")
+    @GetMapping("/driverArriveStartLocation/{orderId}/{driverId}")
+    public Result<Boolean> driverArriveStartLocation(@PathVariable Long orderId, @PathVariable Long driverId) {
+        return Result.ok(orderInfoService.driverArriveStartLocation(orderId, driverId));
+    }
 }
 

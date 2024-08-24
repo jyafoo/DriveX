@@ -47,4 +47,14 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 返回当前订单的信息封装在Result对象中
      */
     CurrentOrderInfoVo searchDriverCurrentOrder(Long driverId);
+
+    /**
+     * 司机到达起始点接口
+     * 该接口用于记录司机到达订单起始点的状态
+     *
+     * @param orderId 订单ID
+     * @param driverId 司机ID
+     * @return 返回一个结果对象，包含一个布尔值，指示司机是否成功到达起始点
+     */
+    Boolean driverArriveStartLocation(Long orderId, Long driverId);
 }

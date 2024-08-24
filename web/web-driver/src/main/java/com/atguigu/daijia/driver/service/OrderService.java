@@ -62,4 +62,12 @@ public interface OrderService {
      * @return 返回一个封装了最佳驾驶线路信息的Result对象
      */
     DrivingLineVo calculateDrivingLine(CalculateDrivingLineForm calculateDrivingLineForm);
+
+    /**
+     * 司机到达代驾起始地点接口
+     *
+     * @param orderId 代驾订单ID，用于标识特定的代驾订单
+     * @return 表示司机是否成功确认到达起始地点
+     */
+    Boolean driverArriveStartLocation(Long orderId, Long driverId);
 }
