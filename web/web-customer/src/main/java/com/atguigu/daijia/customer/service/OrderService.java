@@ -3,6 +3,7 @@ package com.atguigu.daijia.customer.service;
 import com.atguigu.daijia.model.form.customer.ExpectOrderForm;
 import com.atguigu.daijia.model.form.customer.SubmitOrderForm;
 import com.atguigu.daijia.model.vo.customer.ExpectOrderVo;
+import com.atguigu.daijia.model.vo.driver.DriverInfoVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.OrderInfoVo;
 
@@ -51,4 +52,13 @@ public interface OrderService {
      * @return 返回订单信息的封装对象
      */
     OrderInfoVo getOrderInfo(Long orderId, Long customerId);
+
+    /**
+     * 根据订单id获取司机基本信息
+     * 该方法需要用户登录后才能访问，返回指定订单的司机信息
+     *
+     * @param orderId 订单ID，用于识别特定的订单
+     * @return 返回DriverInfoVo对象，包含司机的基本信息
+     */
+    DriverInfoVo getDriverInfo(Long orderId, Long customerId);
 }
