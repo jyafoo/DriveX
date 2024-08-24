@@ -4,6 +4,7 @@ import com.atguigu.daijia.model.form.map.SearchNearByDriverForm;
 import com.atguigu.daijia.model.form.map.UpdateDriverLocationForm;
 import com.atguigu.daijia.model.form.map.UpdateOrderLocationForm;
 import com.atguigu.daijia.model.vo.map.NearByDriverVo;
+import com.atguigu.daijia.model.vo.map.OrderLocationVo;
 
 import java.util.List;
 
@@ -40,4 +41,12 @@ public interface LocationService {
      * @return 布尔值，指示订单位置是否成功更新到缓存
      */
     Boolean updateOrderLocationToCache(UpdateOrderLocationForm updateOrderLocationForm);
+
+    /**
+     * 获取代驾订单的经纬度位置
+     *
+     * @param orderId 订单ID，用于标识特定的订单
+     * @return 返回一个Result对象，其中包含订单的位置信息（经度和纬度）
+     */
+    OrderLocationVo getCacheOrderLocation(Long orderId);
 }

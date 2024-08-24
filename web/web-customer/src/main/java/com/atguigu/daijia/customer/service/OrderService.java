@@ -4,6 +4,7 @@ import com.atguigu.daijia.model.form.customer.ExpectOrderForm;
 import com.atguigu.daijia.model.form.customer.SubmitOrderForm;
 import com.atguigu.daijia.model.vo.customer.ExpectOrderVo;
 import com.atguigu.daijia.model.vo.driver.DriverInfoVo;
+import com.atguigu.daijia.model.vo.map.OrderLocationVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.OrderInfoVo;
 
@@ -61,4 +62,12 @@ public interface OrderService {
      * @return 返回DriverInfoVo对象，包含司机的基本信息
      */
     DriverInfoVo getDriverInfo(Long orderId, Long customerId);
+
+    /**
+     * 获取代驾订单的经纬度位置
+     *
+     * @param orderId 订单ID，用于标识特定的订单
+     * @return 返回一个Result对象，其中包含订单的位置信息（经度和纬度）
+     */
+    OrderLocationVo getCacheOrderLocation(Long orderId);
 }
