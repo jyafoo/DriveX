@@ -1,6 +1,7 @@
 package com.atguigu.daijia.driver.service;
 
 import com.atguigu.daijia.model.form.map.CalculateDrivingLineForm;
+import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
 import com.atguigu.daijia.model.vo.map.DrivingLineVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.NewOrderDataVo;
@@ -70,4 +71,12 @@ public interface OrderService {
      * @return 表示司机是否成功确认到达起始地点
      */
     Boolean driverArriveStartLocation(Long orderId, Long driverId);
+
+    /**
+     * 更新代驾车辆信息
+     *
+     * @param updateOrderCartForm 包含更新车辆信息的表单
+     * @return 返回一个结果对象，对象中包含一个布尔值，表示更新是否成功
+     */
+    Boolean updateOrderCart(UpdateOrderCartForm updateOrderCartForm);
 }
