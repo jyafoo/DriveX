@@ -4,6 +4,8 @@ import com.atguigu.daijia.common.login.LoginCheck;
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.common.util.AuthContextHolder;
 import com.atguigu.daijia.driver.service.OrderService;
+import com.atguigu.daijia.model.form.map.CalculateDrivingLineForm;
+import com.atguigu.daijia.model.vo.map.DrivingLineVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.NewOrderDataVo;
 import com.atguigu.daijia.model.vo.order.OrderInfoVo;
@@ -12,10 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -97,6 +96,19 @@ public class OrderController {
     public Result<OrderInfoVo> getOrderInfo(@PathVariable Long orderId) {
         Long driverId = AuthContextHolder.getUserId();
         return Result.ok(orderService.getOrderInfo(orderId, driverId));
+    }
+
+    /**
+     * 计算最佳驾驶线路
+     *
+     * @param calculateDrivingLineForm 驾驶线路计算表单数据，包含计算最佳线路所需的所有参数
+     * @return 返回一个封装了最佳驾驶线路信息的Result对象
+     */
+    @Operation(summary = "计算最佳驾驶线路")
+    @LoginCheck
+    @PostMapping("/calculateDrivingLine")
+    public Result<DrivingLineVo> calculateDrivingLine(@RequestBody CalculateDrivingLineForm calculateDrivingLineForm) {
+        return Result.ok(orderService.calculateDrivingLine(calculateDrivingLineForm));
     }
 
 }

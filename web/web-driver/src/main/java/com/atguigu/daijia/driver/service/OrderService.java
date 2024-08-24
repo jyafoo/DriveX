@@ -1,5 +1,7 @@
 package com.atguigu.daijia.driver.service;
 
+import com.atguigu.daijia.model.form.map.CalculateDrivingLineForm;
+import com.atguigu.daijia.model.vo.map.DrivingLineVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.NewOrderDataVo;
 import com.atguigu.daijia.model.vo.order.OrderInfoVo;
@@ -52,4 +54,12 @@ public interface OrderService {
      * @return 返回一个OrderInfoVo对象，包含了订单的详细信息，包括但不限于订单状态、乘客信息、行程详情等
      */
     OrderInfoVo getOrderInfo(Long orderId, Long driverId);
+
+    /**
+     * 计算最佳驾驶线路
+     *
+     * @param calculateDrivingLineForm 驾驶线路计算表单数据，包含计算最佳线路所需的所有参数
+     * @return 返回一个封装了最佳驾驶线路信息的Result对象
+     */
+    DrivingLineVo calculateDrivingLine(CalculateDrivingLineForm calculateDrivingLineForm);
 }
