@@ -5,6 +5,7 @@ import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.common.util.AuthContextHolder;
 import com.atguigu.daijia.driver.service.OrderService;
 import com.atguigu.daijia.model.form.map.CalculateDrivingLineForm;
+import com.atguigu.daijia.model.form.order.StartDriveForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
 import com.atguigu.daijia.model.vo.map.DrivingLineVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
@@ -139,6 +140,21 @@ public class OrderController {
         Long driverId = AuthContextHolder.getUserId();
         updateOrderCartForm.setDriverId(driverId);
         return Result.ok(orderService.updateOrderCart(updateOrderCartForm));
+    }
+
+    /**
+     * 开始代驾服务
+     *
+     * @param startDriveForm 包含开始代驾所需信息的表单对象
+     * @return 返回一个Result对象，其中包含一个Boolean值，表示代驾服务是否成功开始
+     */
+    @Operation(summary = "开始代驾服务")
+    @LoginCheck
+    @PostMapping("/startDrive")
+    public Result<Boolean> startDrive(@RequestBody StartDriveForm startDriveForm) {
+        Long driverId = AuthContextHolder.getUserId();
+        startDriveForm.setDriverId(driverId);
+        return Result.ok(orderService.startDrive(startDriveForm));
     }
 
 }

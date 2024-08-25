@@ -7,6 +7,7 @@ import com.atguigu.daijia.model.entity.order.OrderInfo;
 import com.atguigu.daijia.model.entity.order.OrderStatusLog;
 import com.atguigu.daijia.model.enums.OrderStatus;
 import com.atguigu.daijia.model.form.order.OrderInfoForm;
+import com.atguigu.daijia.model.form.order.StartDriveForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.order.mapper.OrderInfoMapper;
@@ -255,6 +256,29 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         } else {
             throw new GuiguException(ResultCodeEnum.UPDATE_ERROR);
         }
+        return true;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Boolean startDrive(StartDriveForm startDriveForm) {
+        LambdaQueryWrapper<OrderInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(OrderInfo::getId, startDriveForm.getOrderId());
+        queryWrapper.eq(OrderInfo::getDriverId, startDriveForm.getDriverId());
+
+        OrderInfo updateOrderInfo = new OrderInfo();
+        updateOrderInfo.setStatus(OrderStatus.START_SERVICE.getStatus());
+        updateOrderInfo.setStartServiceTime(new Date());
+        //只能更新自己的订单
+        int row = orderInfoMapper.update(updateOrderInfo, queryWrapper);
+
+        if(row == 1) {
+            //记录日志
+            this.log(startDriveForm.getOrderId(), OrderStatus.START_SERVICE.getStatus());
+        } else {
+            throw new GuiguException(ResultCodeEnum.UPDATE_ERROR);
+        }
+
         return true;
     }
 
