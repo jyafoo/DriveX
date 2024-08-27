@@ -1,7 +1,10 @@
 package com.atguigu.daijia.driver.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import com.atguigu.daijia.common.execption.GuiguException;
+import com.atguigu.daijia.common.result.ResultCodeEnum;
 import com.atguigu.daijia.driver.config.TencentCloudProperties;
+import com.atguigu.daijia.driver.service.CiService;
 import com.atguigu.daijia.driver.service.CosService;
 import com.atguigu.daijia.model.vo.driver.CosUploadVo;
 import com.qcloud.cos.COSClient;
@@ -31,6 +34,7 @@ import java.util.UUID;
 public class CosServiceImpl implements CosService {
 
     private final TencentCloudProperties tencentCloudProperties;
+    private final CiService ciService;
 
     /**
      * 创建并返回一个配置了私有凭证的COSClient实例
@@ -79,6 +83,14 @@ public class CosServiceImpl implements CosService {
         PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest); // 上传文件
         log.info(JSON.toJSONString(putObjectResult));
         cosClient.shutdown();
+
+        //图片审核
+        Boolean imageAuditing = ciService.imageAuditing(uploadPath);
+        if(!imageAuditing) {
+            //删除违规图片
+            cosClient.deleteObject(tencentCloudProperties.getBucketPrivate(),uploadPath);
+            throw new GuiguException(ResultCodeEnum.IMAGE_AUDITION_FAIL);
+        }
 
         // 封装返回对象
         CosUploadVo cosUploadVo = new CosUploadVo();
