@@ -4,8 +4,11 @@ package com.atguigu.daijia.map.service.impl;
 import com.atguigu.daijia.common.constant.RedisConstant;
 import com.atguigu.daijia.common.constant.SystemConstant;
 import com.atguigu.daijia.driver.client.DriverInfoFeignClient;
+import com.atguigu.daijia.map.repository.OrderServiceLocationRepository;
 import com.atguigu.daijia.map.service.LocationService;
 import com.atguigu.daijia.model.entity.driver.DriverSet;
+import com.atguigu.daijia.model.entity.map.OrderServiceLocation;
+import com.atguigu.daijia.model.form.map.OrderServiceLocationForm;
 import com.atguigu.daijia.model.form.map.SearchNearByDriverForm;
 import com.atguigu.daijia.model.form.map.UpdateDriverLocationForm;
 import com.atguigu.daijia.model.form.map.UpdateOrderLocationForm;
@@ -13,6 +16,8 @@ import com.atguigu.daijia.model.vo.map.NearByDriverVo;
 import com.atguigu.daijia.model.vo.map.OrderLocationVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.*;
 import org.springframework.data.redis.connection.RedisGeoCommands;
@@ -23,6 +28,7 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,6 +40,7 @@ public class LocationServiceImpl implements LocationService {
 
     private final RedisTemplate redisTemplate;
     private final DriverInfoFeignClient driverInfoFeignClient;
+    private final OrderServiceLocationRepository orderServiceLocationRepository;
 
 
     @Override
@@ -84,28 +91,28 @@ public class LocationServiceImpl implements LocationService {
         // 3、返回计算后的信息
         ArrayList<NearByDriverVo> list = new ArrayList<>();
 
-        if(!CollectionUtils.isEmpty(content)){
+        if (!CollectionUtils.isEmpty(content)) {
             Iterator<GeoResult<RedisGeoCommands.GeoLocation<String>>> iterator = content.iterator();
-            while(iterator.hasNext()){
+            while (iterator.hasNext()) {
                 GeoResult<RedisGeoCommands.GeoLocation<String>> item = iterator.next();
 
                 long driverId = Long.parseLong(item.getContent().getName());
                 BigDecimal curDistance = new BigDecimal(item
                         .getDistance().getValue()).setScale(2, RoundingMode.HALF_UP);
-                log.info("司机：{}，距离：{}",driverId,item.getDistance().getValue());
+                log.info("司机：{}，距离：{}", driverId, item.getDistance().getValue());
 
-                //获取司机接单设置参数
+                // 获取司机接单设置参数
                 DriverSet driverSet = driverInfoFeignClient.getDriverSet(driverId).getData();
 
                 // 接单里程判断，acceptDistance==0：不限制
-                if(driverSet.getAcceptDistance().doubleValue() != 0 &&
-                        driverSet.getAcceptDistance().subtract(curDistance).doubleValue() < 0){
+                if (driverSet.getAcceptDistance().doubleValue() != 0 &&
+                        driverSet.getAcceptDistance().subtract(curDistance).doubleValue() < 0) {
                     continue;
                 }
 
                 // 订单里程判断，orderDistance==0：不限制
-                if(driverSet.getOrderDistance().doubleValue() != 0 &&
-                driverSet.getOrderDistance().subtract(searchNearByDriverForm.getMileageDistance()).doubleValue() < 0){
+                if (driverSet.getOrderDistance().doubleValue() != 0 &&
+                        driverSet.getOrderDistance().subtract(searchNearByDriverForm.getMileageDistance()).doubleValue() < 0) {
                     continue;
                 }
                 // 满足条件的附近司机信息
@@ -131,7 +138,24 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public OrderLocationVo getCacheOrderLocation(Long orderId) {
-        return (OrderLocationVo)redisTemplate.opsForValue().get(RedisConstant.UPDATE_ORDER_LOCATION + orderId);
+        return (OrderLocationVo) redisTemplate.opsForValue().get(RedisConstant.UPDATE_ORDER_LOCATION + orderId);
+    }
+
+    @Override
+    public Boolean saveOrderServiceLocation(List<OrderServiceLocationForm> orderLocationServiceFormList) {
+        // TODO (JIA,2024/8/27,10:48) 亮点五：使用 mongodb 批量存储订单位置信息
+        ArrayList<OrderServiceLocation> list = new ArrayList<>();
+        orderLocationServiceFormList.forEach(item -> {
+            OrderServiceLocation orderServiceLocation = new OrderServiceLocation();
+            BeanUtils.copyProperties(item,orderServiceLocation);
+            orderServiceLocation.setId(ObjectId.get().toString());
+            orderServiceLocation.setCreateTime(new Date());
+            list.add(orderServiceLocation);
+        });
+
+        orderServiceLocationRepository.saveAll(list);
+
+        return true;
     }
 
 

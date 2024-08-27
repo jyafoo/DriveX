@@ -1,5 +1,6 @@
 package com.atguigu.daijia.map.service;
 
+import com.atguigu.daijia.model.form.map.OrderServiceLocationForm;
 import com.atguigu.daijia.model.form.map.SearchNearByDriverForm;
 import com.atguigu.daijia.model.form.map.UpdateDriverLocationForm;
 import com.atguigu.daijia.model.form.map.UpdateOrderLocationForm;
@@ -49,4 +50,13 @@ public interface LocationService {
      * @return 返回一个Result对象，其中包含订单的位置信息（经度和纬度）
      */
     OrderLocationVo getCacheOrderLocation(Long orderId);
+
+    /**
+     * 批量保存代驾服务订单位置
+     *
+     * @param orderLocationServiceFormList 代驾服务订单位置信息列表，用于保存多个订单的位置信息
+     * @return 布尔值，表示位置信息是否保存成功
+     */
+    Boolean saveOrderServiceLocation(List<OrderServiceLocationForm> orderLocationServiceFormList);
+
 }

@@ -1,7 +1,10 @@
 package com.atguigu.daijia.driver.service;
 
+import com.atguigu.daijia.model.form.map.OrderServiceLocationForm;
 import com.atguigu.daijia.model.form.map.UpdateDriverLocationForm;
 import com.atguigu.daijia.model.form.map.UpdateOrderLocationForm;
+
+import java.util.List;
 
 public interface LocationService {
 
@@ -20,4 +23,12 @@ public interface LocationService {
      * @return 布尔值，指示订单位置是否成功更新到缓存
      */
     Boolean updateOrderLocationToCache(UpdateOrderLocationForm updateOrderLocationForm);
+
+    /**
+     * 批量保存代驾服务订单位置
+     *
+     * @param orderLocationServiceFormList 代驾服务订单位置信息列表，用于保存多个订单的位置信息
+     * @return 布尔值，表示位置信息是否保存成功
+     */
+    Boolean saveOrderServiceLocation(List<OrderServiceLocationForm> orderLocationServiceFormList);
 }
