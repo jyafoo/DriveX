@@ -1,5 +1,7 @@
 package com.atguigu.daijia.driver.service;
 
+import com.atguigu.daijia.model.vo.order.TextAuditingVo;
+
 public interface CiService {
 
 
@@ -17,4 +19,12 @@ public interface CiService {
      */
     Boolean imageAuditing(String path);
 
+    /**
+     * 文本审核接口
+     * 该接口用于对给定的文本内容进行审核，以检测其中是否包含敏感或违规信息
+     *
+     * @param content 待审核的文本内容
+     * @return 返回审核结果，包括是否通过审核及审核详情
+     */
+    TextAuditingVo textAuditing(String content);
 }

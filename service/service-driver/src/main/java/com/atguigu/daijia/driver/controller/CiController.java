@@ -18,7 +18,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value="/cos")
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class CiController {
-	
+
+
+    private CiService ciService;
+
+    /**
+     * 文本审核接口
+     * 该接口用于对给定的文本内容进行审核，以检测其中是否包含敏感或违规信息
+     *
+     * @param content 待审核的文本内容
+     * @return 返回审核结果，包括是否通过审核及审核详情
+     */
+    @Operation(summary = "文本审核")
+    @PostMapping("/textAuditing")
+    public Result<TextAuditingVo> textAuditing(@RequestBody String content) {
+        return Result.ok(ciService.textAuditing(content));
+    }
 
 }
 

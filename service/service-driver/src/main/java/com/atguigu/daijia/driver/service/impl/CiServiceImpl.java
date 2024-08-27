@@ -2,17 +2,20 @@ package com.atguigu.daijia.driver.service.impl;
 
 import com.atguigu.daijia.driver.config.TencentCloudProperties;
 import com.atguigu.daijia.driver.service.CiService;
+import com.atguigu.daijia.model.vo.order.TextAuditingVo;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
 import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.http.HttpProtocol;
-import com.qcloud.cos.model.ciModel.auditing.ImageAuditingRequest;
-import com.qcloud.cos.model.ciModel.auditing.ImageAuditingResponse;
+import com.qcloud.cos.model.ciModel.auditing.*;
 import com.qcloud.cos.region.Region;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -66,6 +69,57 @@ public class CiServiceImpl implements CiService {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public TextAuditingVo textAuditing(String content) {
+        if(!StringUtils.hasText(content)) {
+            TextAuditingVo textAuditingVo = new TextAuditingVo();
+            textAuditingVo.setResult("0");
+            return textAuditingVo;
+        }
+        COSClient cosClient = this.getPrivateCOSClient();
+
+        TextAuditingRequest request = new TextAuditingRequest();
+        request.setBucketName(tencentCloudProperties.getBucketPrivate());
+
+        //将图片转换为base64字符串
+        byte[] encoder = org.apache.commons.codec.binary.Base64.encodeBase64(content.getBytes());
+        String contentBase64 = new String(encoder);
+        request.getInput().setContent(contentBase64);
+        request.getConf().setDetectType("all");
+
+        // 调用接口,获取任务响应对象
+        TextAuditingResponse response = cosClient.createAuditingTextJobs(request);
+        AuditingJobsDetail detail = response.getJobsDetail();
+
+        // 封装结果
+        TextAuditingVo textAuditingVo = new TextAuditingVo();
+        if ("Success".equals(detail.getState())) {
+            //检测结果: 0（审核正常），1 （判定为违规敏感文件），2（疑似敏感，建议人工复核）。
+            String result = detail.getResult();
+
+            //违规关键词
+            StringBuffer keywords = new StringBuffer();
+            List<SectionInfo> sectionInfoList = detail.getSectionList();
+            for (SectionInfo info : sectionInfoList) {
+                String pornInfoKeyword = info.getPornInfo().getKeywords();
+                String illegalInfoKeyword = info.getIllegalInfo().getKeywords();
+                String abuseInfoKeyword = info.getAbuseInfo().getKeywords();
+                if (pornInfoKeyword.length() > 0) {
+                    keywords.append(pornInfoKeyword).append(",");
+                }
+                if (illegalInfoKeyword.length() > 0) {
+                    keywords.append(illegalInfoKeyword).append(",");
+                }
+                if (abuseInfoKeyword.length() > 0) {
+                    keywords.append(abuseInfoKeyword).append(",");
+                }
+            }
+            textAuditingVo.setResult(result);
+            textAuditingVo.setKeywords(keywords.toString());
+        }
+        return textAuditingVo;
     }
 
 }
