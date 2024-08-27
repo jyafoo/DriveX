@@ -14,12 +14,17 @@ import com.atguigu.daijia.model.form.map.UpdateDriverLocationForm;
 import com.atguigu.daijia.model.form.map.UpdateOrderLocationForm;
 import com.atguigu.daijia.model.vo.map.NearByDriverVo;
 import com.atguigu.daijia.model.vo.map.OrderLocationVo;
+import com.atguigu.daijia.model.vo.map.OrderServiceLastLocationVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.geo.*;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -41,6 +46,7 @@ public class LocationServiceImpl implements LocationService {
     private final RedisTemplate redisTemplate;
     private final DriverInfoFeignClient driverInfoFeignClient;
     private final OrderServiceLocationRepository orderServiceLocationRepository;
+    private final MongoTemplate mongoTemplate;
 
 
     @Override
@@ -143,7 +149,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public Boolean saveOrderServiceLocation(List<OrderServiceLocationForm> orderLocationServiceFormList) {
-        // TODO (JIA,2024/8/27,10:48) 亮点五：使用 mongodb 批量存储订单位置信息
+        // TODO (JIA,2024/8/27,10:48) 亮点五：使用 mongodb 批量存储订单位置信息（1）
         ArrayList<OrderServiceLocation> list = new ArrayList<>();
         orderLocationServiceFormList.forEach(item -> {
             OrderServiceLocation orderServiceLocation = new OrderServiceLocation();
@@ -156,6 +162,21 @@ public class LocationServiceImpl implements LocationService {
         orderServiceLocationRepository.saveAll(list);
 
         return true;
+    }
+
+    @Override
+    public OrderServiceLastLocationVo getOrderServiceLastLocation(Long orderId) {
+        // TODO (JIA,2024/8/27,10:48) 亮点五：乘客查询mongo中订单位置信息第一条（2）
+        Query query = new Query();
+        query.addCriteria(Criteria.where("orderId").is(orderId));
+        query.with(Sort.by(Sort.Order.desc("createTime")));
+        query.limit(1);
+        OrderServiceLocation orderServiceLocation = mongoTemplate.findOne(query, OrderServiceLocation.class);
+
+        //封装返回对象
+        OrderServiceLastLocationVo orderServiceLastLocationVo = new OrderServiceLastLocationVo();
+        BeanUtils.copyProperties(orderServiceLocation, orderServiceLastLocationVo);
+        return orderServiceLastLocationVo;
     }
 
 

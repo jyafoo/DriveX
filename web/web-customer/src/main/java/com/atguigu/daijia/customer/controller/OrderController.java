@@ -9,6 +9,7 @@ import com.atguigu.daijia.model.form.customer.SubmitOrderForm;
 import com.atguigu.daijia.model.vo.customer.ExpectOrderVo;
 import com.atguigu.daijia.model.vo.driver.DriverInfoVo;
 import com.atguigu.daijia.model.vo.map.OrderLocationVo;
+import com.atguigu.daijia.model.vo.map.OrderServiceLastLocationVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.OrderInfoVo;
 import io.swagger.v3.oas.annotations.Operation;
@@ -124,7 +125,19 @@ public class OrderController {
         return Result.ok(orderService.getCacheOrderLocation(orderId));
     }
 
-
+    /**
+     * 获取订单服务最后一个位置信息
+     * 该方法通过订单ID查询并返回订单服务的最后一个位置信息，主要用于需要实时获取代驾服务位置的场景
+     *
+     * @param orderId 订单ID，用于标识特定的代驾服务订单
+     * @return 订单服务的最后一个位置信息
+     */
+    @Operation(summary = "代驾服务：获取订单服务最后一个位置信息")
+    @LoginCheck
+    @GetMapping("/getOrderServiceLastLocation/{orderId}")
+    public Result<OrderServiceLastLocationVo> getOrderServiceLastLocation(@PathVariable Long orderId) {
+        return Result.ok(orderService.getOrderServiceLastLocation(orderId));
+    }
 
 }
 

@@ -8,6 +8,7 @@ import com.atguigu.daijia.model.form.map.UpdateDriverLocationForm;
 import com.atguigu.daijia.model.form.map.UpdateOrderLocationForm;
 import com.atguigu.daijia.model.vo.map.NearByDriverVo;
 import com.atguigu.daijia.model.vo.map.OrderLocationVo;
+import com.atguigu.daijia.model.vo.map.OrderServiceLastLocationVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -98,6 +99,19 @@ public class LocationController {
     @PostMapping("/saveOrderServiceLocation")
     public Result<Boolean> saveOrderServiceLocation(@RequestBody List<OrderServiceLocationForm> orderLocationServiceFormList) {
         return Result.ok(locationService.saveOrderServiceLocation(orderLocationServiceFormList));
+    }
+
+    /**
+     * 获取订单服务最后一个位置信息
+     * 该方法通过订单ID查询并返回订单服务的最后一个位置信息，主要用于需要实时获取代驾服务位置的场景
+     *
+     * @param orderId 订单ID，用于标识特定的代驾服务订单
+     * @return 订单服务的最后一个位置信息
+     */
+    @Operation(summary = "代驾服务：获取订单服务最后一个位置信息")
+    @GetMapping("/getOrderServiceLastLocation/{orderId}")
+    public Result<OrderServiceLastLocationVo> getOrderServiceLastLocation(@PathVariable Long orderId) {
+        return Result.ok(locationService.getOrderServiceLastLocation(orderId));
     }
 }
 
