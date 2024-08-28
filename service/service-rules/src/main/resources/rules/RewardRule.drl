@@ -24,6 +24,7 @@ rule "00:00:00-06:59:59  完成5单后 每单奖励5元"
         rewardRuleResponse.setRewardAmount(new BigDecimal("5.0"));
         System.out.println("00:00:00-06:59:59 奖励：" + rewardRuleResponse.getRewardAmount() + "元");
 end
+
 rule "07:00:00-23:59:59  完成10单后 每单奖励2元"
     salience 10          //指定优先级，数值越大优先级越高，不指定的情况下由上到下执行
     no-loop true         //防止陷入死循环
