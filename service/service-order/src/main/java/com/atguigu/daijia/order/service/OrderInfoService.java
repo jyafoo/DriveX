@@ -3,6 +3,7 @@ package com.atguigu.daijia.order.service;
 import com.atguigu.daijia.model.entity.order.OrderInfo;
 import com.atguigu.daijia.model.form.order.OrderInfoForm;
 import com.atguigu.daijia.model.form.order.StartDriveForm;
+import com.atguigu.daijia.model.form.order.UpdateOrderBillForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -84,4 +85,12 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 订单总数。
      */
     Long getOrderNumByTime(String startTime, String endTime);
+
+    /**
+     * 结束代驾服务并更新订单账单
+     *
+     * @param updateOrderBillForm 包含更新订单账单所需信息的请求体
+     * @return 订单账单是否更新成功
+     */
+    Boolean endDrive(UpdateOrderBillForm updateOrderBillForm);
 }
