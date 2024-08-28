@@ -1,6 +1,7 @@
 package com.atguigu.daijia.driver.service;
 
 import com.atguigu.daijia.model.form.map.CalculateDrivingLineForm;
+import com.atguigu.daijia.model.form.order.OrderFeeForm;
 import com.atguigu.daijia.model.form.order.StartDriveForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
 import com.atguigu.daijia.model.vo.map.DrivingLineVo;
@@ -88,4 +89,12 @@ public interface OrderService {
      * @return 返回一个Result对象，其中包含一个Boolean值，表示代驾服务是否成功开始
      */
     Boolean startDrive(StartDriveForm startDriveForm);
+
+    /**
+     * 结束代驾服务并更新订单账单
+     *
+     * @param orderFeeForm 订单费用表单，包含更新订单账单所需的各种费用信息
+     * @return 订单更新是否成功
+     */
+    Boolean endDrive(OrderFeeForm orderFeeForm);
 }

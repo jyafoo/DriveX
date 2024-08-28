@@ -5,6 +5,7 @@ import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.common.util.AuthContextHolder;
 import com.atguigu.daijia.driver.service.OrderService;
 import com.atguigu.daijia.model.form.map.CalculateDrivingLineForm;
+import com.atguigu.daijia.model.form.order.OrderFeeForm;
 import com.atguigu.daijia.model.form.order.StartDriveForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
 import com.atguigu.daijia.model.vo.map.DrivingLineVo;
@@ -155,6 +156,21 @@ public class OrderController {
         Long driverId = AuthContextHolder.getUserId();
         startDriveForm.setDriverId(driverId);
         return Result.ok(orderService.startDrive(startDriveForm));
+    }
+
+    /**
+     * 结束代驾服务并更新订单账单
+     *
+     * @param orderFeeForm 订单费用表单，包含更新订单账单所需的各种费用信息
+     * @return 订单更新是否成功
+     */
+    @Operation(summary = "结束代驾服务更新订单账单")
+    @LoginCheck
+    @PostMapping("/endDrive")
+    public Result<Boolean> endDrive(@RequestBody OrderFeeForm orderFeeForm) {
+        Long driverId = AuthContextHolder.getUserId();
+        orderFeeForm.setDriverId(driverId);
+        return Result.ok(orderService.endDrive(orderFeeForm));
     }
 
 }
