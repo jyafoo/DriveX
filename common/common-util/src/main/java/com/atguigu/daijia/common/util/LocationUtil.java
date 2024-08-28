@@ -5,7 +5,11 @@ public class LocationUtil {
     // 地球赤道半径
     private static double EARTH_RADIUS = 6378.137;
 
-    //等同——Math.toRadians()
+    /**
+     * 等同——Math.toRadians()
+     * @param d
+     * @return
+     */
     private static double rad(double d) {
         return d * Math.PI / 180.0;
     }

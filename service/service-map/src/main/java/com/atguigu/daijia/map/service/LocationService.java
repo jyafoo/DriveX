@@ -8,6 +8,7 @@ import com.atguigu.daijia.model.vo.map.NearByDriverVo;
 import com.atguigu.daijia.model.vo.map.OrderLocationVo;
 import com.atguigu.daijia.model.vo.map.OrderServiceLastLocationVo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface LocationService {
@@ -68,4 +69,12 @@ public interface LocationService {
      * @return 订单服务的最后一个位置信息
      */
     OrderServiceLastLocationVo getOrderServiceLastLocation(Long orderId);
+
+    /**
+     * 计算指定订单的实际行驶里程。
+     *
+     * @param orderId 订单ID，用于标识特定的订单。
+     * @return 订单的实际行驶里程信息。
+     */
+    BigDecimal calculateOrderRealDistance(Long orderId);
 }
