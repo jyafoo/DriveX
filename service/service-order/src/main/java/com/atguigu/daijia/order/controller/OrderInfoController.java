@@ -133,6 +133,18 @@ public class OrderInfoController {
         return Result.ok(orderInfoService.startDrive(startDriveForm));
     }
 
+    /**
+     * 根据给定的时间段，查询并返回该时间段内的订单数量。
+     *
+     * @param startTime 查询时间段的开始时间，格式为字符串，确保查询的起始点准确。
+     * @param endTime 查询时间段的结束时间，格式为字符串，确保查询的截止点准确。
+     * @return 订单总数。
+     */
+    @Operation(summary = "根据时间段获取订单数")
+    @GetMapping("/getOrderNumByTime/{startTime}/{endTime}")
+    public Result<Long> getOrderNumByTime(@PathVariable String startTime, @PathVariable String endTime) {
+        return Result.ok(orderInfoService.getOrderNumByTime(startTime, endTime));
+    }
 
 }
 

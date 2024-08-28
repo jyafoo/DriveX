@@ -90,4 +90,13 @@ public interface OrderInfoFeignClient {
      */
     @PostMapping("/order/info/startDrive")
     Result<Boolean> startDrive(@RequestBody StartDriveForm startDriveForm);
+
+    /**
+     *  根据时间段获取订单数
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    @GetMapping("/order/info/getOrderNumByTime/{startTime}/{endTime}")
+    Result<Long> getOrderNumByTime(@PathVariable("startTime") String startTime, @PathVariable("endTime") String endTime);
 }
