@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
-"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.apache.org/dtd/mybatis-3-mapper.dtd">
 
 
 <mapper namespace="com.atguigu.daijia.order.mapper.OrderInfoMapper">
-
+    <select id="selectCustomerOrderPage" resultType="com.atguigu.daijia.model.vo.order.OrderListVo">
+        select
+        info.id,
+        info.order_no,
+        info.start_location,
+        info.end_location,
+        if(info.status &lt; 7, info.expect_amount, bill.pay_amount) as amount,
+        info.status,
+        info.create_time
+        from order_info info
+        left join order_bill bill on bill.order_id = info.id
+        where info.customer_id = #{customerId}
+        and info.is_deleted = 0
+        order by info.create_time desc
+    </select>
 
 </mapper>
 
