@@ -4,6 +4,7 @@ import com.atguigu.daijia.model.form.map.CalculateDrivingLineForm;
 import com.atguigu.daijia.model.form.order.OrderFeeForm;
 import com.atguigu.daijia.model.form.order.StartDriveForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
+import com.atguigu.daijia.model.vo.base.PageVo;
 import com.atguigu.daijia.model.vo.map.DrivingLineVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.NewOrderDataVo;
@@ -97,4 +98,13 @@ public interface OrderService {
      * @return 订单更新是否成功
      */
     Boolean endDrive(OrderFeeForm orderFeeForm);
+
+    /**
+     * 获取司机订单分页列
+     * @param driverId
+     * @param page
+     * @param limit
+     * @return
+     */
+    PageVo findDriverOrderPage(Long driverId, Long page, Long limit);
 }

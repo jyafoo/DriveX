@@ -121,4 +121,16 @@ public interface OrderInfoFeignClient {
     Result<PageVo> findCustomerOrderPage(@PathVariable("customerId") Long customerId,
                                          @PathVariable("page") Long page,
                                          @PathVariable("limit") Long limit);
+
+    /**
+     * 获取司机订单分页列表
+     * @param driverId
+     * @param page
+     * @param limit
+     * @return
+     */
+    @GetMapping("/order/info/findDriverOrderPage/{driverId}/{page}/{limit}")
+    Result<PageVo> findDriverOrderPage(@PathVariable("driverId") Long driverId,
+                                       @PathVariable("page") Long page,
+                                       @PathVariable("limit") Long limit);
 }

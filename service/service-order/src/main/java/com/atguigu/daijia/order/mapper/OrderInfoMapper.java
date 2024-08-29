@@ -19,4 +19,13 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return 返回一个分页对象，包含订单列表和分页信息此方法用于在客户相关操作中检索订单信息，通过客户ID进行过滤，同时支持分页显示
      */
     IPage<OrderListVo> selectCustomerOrderPage(Page<OrderInfo> pageParam, Long customerId);
+
+    /**
+     * 查询司机的订单分页列表
+     *
+     * @param pageParam 分页参数，用于指定分页查询的页码和每页显示数量
+     * @param driverId 司机的ID，用于查询该司机相关的订单
+     * @return 返回一个分页对象，包含订单列表和分页信息此方法旨在通过司机ID提供分页查询司机的订单信息功能
+     */
+    IPage<OrderListVo> selectDriverOrderPage(Page<OrderInfo> pageParam, Long driverId);
 }
