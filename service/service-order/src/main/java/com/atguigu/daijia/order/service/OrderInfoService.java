@@ -8,6 +8,7 @@ import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
 import com.atguigu.daijia.model.vo.base.PageVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.OrderBillVo;
+import com.atguigu.daijia.model.vo.order.OrderProfitsharingVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -117,4 +118,12 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 返回订单账单信息的查询结果
      */
     OrderBillVo getOrderBillInfo(Long orderId);
+
+    /**
+     * 根据订单id获取实际分账信息
+     *
+     * @param orderId 订单ID
+     * @return 分账信息封装在Result对象中
+     */
+    OrderProfitsharingVo getOrderProfitsharing(Long orderId);
 }
