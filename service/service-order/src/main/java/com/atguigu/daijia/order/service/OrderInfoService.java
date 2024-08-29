@@ -8,6 +8,7 @@ import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
 import com.atguigu.daijia.model.vo.base.PageVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.OrderBillVo;
+import com.atguigu.daijia.model.vo.order.OrderPayVo;
 import com.atguigu.daijia.model.vo.order.OrderProfitsharingVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -135,4 +136,13 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 布尔值，表示发送是否成功
      */
     Boolean sendOrderBillInfo(Long orderId, Long driverId);
+
+    /**
+     * 获取订单支付信息
+     *
+     * @param orderNo   订单号，唯一标识一个订单
+     * @param customerId 客户ID，用于确认请求的客户身份
+     * @return 订单支付信息的OrderPayVo对象如果获取失败，可能返回错误信息
+     */
+    OrderPayVo getOrderPayVo(String orderNo, Long customerId);
 }
