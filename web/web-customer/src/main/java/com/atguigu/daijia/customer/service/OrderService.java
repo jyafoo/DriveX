@@ -2,6 +2,7 @@ package com.atguigu.daijia.customer.service;
 
 import com.atguigu.daijia.model.form.customer.ExpectOrderForm;
 import com.atguigu.daijia.model.form.customer.SubmitOrderForm;
+import com.atguigu.daijia.model.form.payment.CreateWxPaymentForm;
 import com.atguigu.daijia.model.vo.base.PageVo;
 import com.atguigu.daijia.model.vo.customer.ExpectOrderVo;
 import com.atguigu.daijia.model.vo.driver.DriverInfoVo;
@@ -9,6 +10,7 @@ import com.atguigu.daijia.model.vo.map.OrderLocationVo;
 import com.atguigu.daijia.model.vo.map.OrderServiceLastLocationVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.OrderInfoVo;
+import com.atguigu.daijia.model.vo.payment.WxPrepayVo;
 
 public interface OrderService {
 
@@ -89,4 +91,12 @@ public interface OrderService {
      * @return
      */
     PageVo findCustomerOrderPage(Long customerId, Long page, Long limit);
+
+    /**
+     * 创建微信支付信息
+     *
+     * @param createWxPaymentForm 创建微信支付的表单数据，包含订单金额、商品描述等必要信息
+     * @return 返回一个微信预支付的语音对象，其中包含微信支付所需的预支付ID等关键信息
+     */
+    WxPrepayVo createWxPayment(CreateWxPaymentForm createWxPaymentForm);
 }
