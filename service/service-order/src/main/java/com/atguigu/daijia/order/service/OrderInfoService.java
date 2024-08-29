@@ -126,4 +126,13 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 分账信息封装在Result对象中
      */
     OrderProfitsharingVo getOrderProfitsharing(Long orderId);
+
+    /**
+     * 发送账单信息
+     *
+     * @param orderId 订单ID，用于标识特定的订单
+     * @param driverId 司机ID，用于标识账单信息发送的目标司机
+     * @return 布尔值，表示发送是否成功
+     */
+    Boolean sendOrderBillInfo(Long orderId, Long driverId);
 }

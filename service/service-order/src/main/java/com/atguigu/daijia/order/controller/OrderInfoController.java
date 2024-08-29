@@ -1,7 +1,10 @@
 package com.atguigu.daijia.order.controller;
 
+import com.atguigu.daijia.common.execption.GuiguException;
 import com.atguigu.daijia.common.result.Result;
+import com.atguigu.daijia.common.result.ResultCodeEnum;
 import com.atguigu.daijia.model.entity.order.OrderInfo;
+import com.atguigu.daijia.model.enums.OrderStatus;
 import com.atguigu.daijia.model.form.order.OrderInfoForm;
 import com.atguigu.daijia.model.form.order.StartDriveForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderBillForm;
@@ -11,12 +14,14 @@ import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.OrderBillVo;
 import com.atguigu.daijia.model.vo.order.OrderProfitsharingVo;
 import com.atguigu.daijia.order.service.OrderInfoService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -228,6 +233,19 @@ public class OrderInfoController {
     @GetMapping("/getOrderProfitsharing/{orderId}")
     public Result<OrderProfitsharingVo> getOrderProfitsharing(@PathVariable Long orderId) {
         return Result.ok(orderInfoService.getOrderProfitsharing(orderId));
+    }
+
+    /**
+     * 发送账单信息
+     *
+     * @param orderId 订单ID，用于标识特定的订单
+     * @param driverId 司机ID，用于标识账单信息发送的目标司机
+     * @return 布尔值，表示发送是否成功
+     */
+    @Operation(summary = "发送账单信息")
+    @GetMapping("/sendOrderBillInfo/{orderId}/{driverId}")
+    Result<Boolean> sendOrderBillInfo(@PathVariable Long orderId, @PathVariable Long driverId) {
+        return Result.ok(orderInfoService.sendOrderBillInfo(orderId, driverId));
     }
 
 }

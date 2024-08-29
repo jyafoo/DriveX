@@ -195,5 +195,19 @@ public class OrderController {
         return Result.ok(pageVo);
     }
 
+    /**
+     * 发送账单信息
+     *
+     * @param orderId 订单ID，用于标识特定的订单
+     * @return 布尔值，表示发送是否成功
+     */
+    @Operation(summary = "司机发送账单信息")
+    @LoginCheck
+    @GetMapping("/sendOrderBillInfo/{orderId}")
+    public Result<Boolean> sendOrderBillInfo(@PathVariable Long orderId) {
+        Long driverId = AuthContextHolder.getUserId();
+        return Result.ok(orderService.sendOrderBillInfo(orderId, driverId));
+    }
+
 }
 
