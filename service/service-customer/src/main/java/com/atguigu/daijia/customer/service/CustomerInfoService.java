@@ -30,4 +30,12 @@ public interface CustomerInfoService extends IService<CustomerInfo> {
      * @return 返回一个Result对象，其中包含一个Boolean值，表示更新操作是否成功
      */
     Boolean updateWxPhoneNumber(UpdateWxPhoneForm updateWxPhoneForm);
+
+    /**
+     * 获取客户OpenId
+     *
+     * @param customerId 客户的唯一标识ID，通过路径变量获取
+     * @return 操作结果或错误信息
+     */
+    String getCustomerOpenId(Long customerId);
 }

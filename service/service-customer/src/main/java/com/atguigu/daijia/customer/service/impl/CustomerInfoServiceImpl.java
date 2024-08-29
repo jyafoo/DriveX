@@ -108,6 +108,12 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         customerInfo.setId(updateWxPhoneForm.getCustomerId());
 
         return this.updateById(customerInfo);
-
     }
+
+    @Override
+    public String getCustomerOpenId(Long customerId) {
+        CustomerInfo customerInfo = this.getOne(new LambdaQueryWrapper<CustomerInfo>().eq(CustomerInfo::getId, customerId).select(CustomerInfo::getWxOpenId));
+        return customerInfo.getWxOpenId();
+    }
+
 }
