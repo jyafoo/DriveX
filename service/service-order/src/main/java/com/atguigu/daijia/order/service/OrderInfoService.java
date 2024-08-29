@@ -7,6 +7,7 @@ import com.atguigu.daijia.model.form.order.UpdateOrderBillForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
 import com.atguigu.daijia.model.vo.base.PageVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
+import com.atguigu.daijia.model.vo.order.OrderBillVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -108,4 +109,12 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * 获取司机端订单分页列表
      */
     PageVo findDriverOrderPage(Page<OrderInfo> pageParam, Long driverId);
+
+    /**
+     * 根据订单id获取实际账单信息
+     *
+     * @param orderId 订单ID
+     * @return 返回订单账单信息的查询结果
+     */
+    OrderBillVo getOrderBillInfo(Long orderId);
 }
