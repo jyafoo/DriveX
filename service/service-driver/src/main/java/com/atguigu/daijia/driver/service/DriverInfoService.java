@@ -95,4 +95,12 @@ public interface DriverInfoService extends IService<DriverInfo> {
      * @return 返回DriverInfoVo对象，包含司机的基本信息
      */
     DriverInfoVo getDriverInfo(Long driverId);
+
+    /**
+     * 获取司机的OpenId
+     *
+     * @param driverId 司机的ID，用于标识特定的司机
+     * @return 包含司机OpenId的结果对象
+     */
+    String getDriverOpenId(Long driverId);
 }

@@ -148,6 +148,18 @@ public class DriverInfoController {
         return Result.ok(driverInfoService.getDriverInfo(driverId));
     }
 
+    /**
+     * 获取司机的OpenId
+     *
+     * @param driverId 司机的ID，用于标识特定的司机
+     * @return 包含司机OpenId的结果对象
+     */
+    @Operation(summary = "获取司机OpenId")
+    @GetMapping("/getDriverOpenId/{driverId}")
+    public Result<String> getDriverOpenId(@PathVariable Long driverId) {
+        return Result.ok(driverInfoService.getDriverOpenId(driverId));
+    }
+
 
 }
 
