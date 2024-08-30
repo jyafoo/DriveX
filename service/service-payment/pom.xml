@@ -18,6 +18,12 @@
             <groupId>com.github.wechatpay-apiv3</groupId>
             <artifactId>wechatpay-java</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.atguigu.daijia</groupId>
+            <artifactId>rabbit-util</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

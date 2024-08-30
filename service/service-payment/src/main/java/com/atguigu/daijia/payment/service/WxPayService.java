@@ -14,4 +14,13 @@ public interface WxPayService {
      * @return 返回微信支付的预支付信息包装类，以及成功状态码
      */
     WxPrepayVo createWxPayment(PaymentInfoForm paymentInfoForm);
+
+    /**
+     * 查询支付状态
+     * 通过订单号查询支付状态，以便确认用户是否完成支付
+     *
+     * @param orderNo 订单号，用于标识查询的支付订单
+     * @return 返回支付状态的查询结果
+     */
+    Boolean queryPayStatus(String orderNo);
 }

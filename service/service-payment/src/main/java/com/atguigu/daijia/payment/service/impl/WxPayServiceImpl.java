@@ -105,4 +105,44 @@ public class WxPayServiceImpl implements WxPayService {
         }
     }
 
+    @Override
+    public Boolean queryPayStatus(String orderNo) {
+        //1 创建微信操作对象
+        JsapiServiceExtension service =
+                new JsapiServiceExtension.Builder().config(rsaAutoCertificateConfig).build();
+
+        //2 封装查询支付状态需要参数
+        QueryOrderByOutTradeNoRequest queryRequest = new QueryOrderByOutTradeNoRequest();
+        queryRequest.setMchid(wxPayV3Properties.getMerchantId());
+        queryRequest.setOutTradeNo(orderNo);
+
+        //3 调用微信操作对象里面方法实现查询操作
+        Transaction transaction = service.queryOrderByOutTradeNo(queryRequest);
+
+        //4 查询返回结果，根据结果判断
+        if(transaction != null && transaction.getTradeState() == Transaction.TradeStateEnum.SUCCESS) {
+            //5 如果支付成功，调用其他方法实现支付后处理逻辑
+            this.handlePayment(transaction);
+
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * 处理支付操作
+     *
+     * 本函数负责处理与支付相关的交易操作，旨在实现支付逻辑的统一处理支付逻辑可能包括但不限于
+     * 支付验证、调用支付接口、记录支付日志等操作此函数的设计遵循单一职责原则，将支付相关
+     * 的逻辑封装在此，以提高代码的可维护性和可读性
+     *
+     * @param transaction 交易对象，包含了进行支付所需的所有信息，如支付金额、支付方式、交易双方等
+     *                    详细信息具体Transaction类的结构和字段信息需参考其类定义
+     */
+    private void handlePayment(Transaction transaction) {
+
+
+    }
+
 }

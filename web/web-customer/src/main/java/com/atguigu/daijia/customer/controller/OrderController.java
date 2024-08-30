@@ -178,5 +178,18 @@ public class OrderController {
         return Result.ok(orderService.createWxPayment(createWxPaymentForm));
     }
 
+    /**
+     * 查询支付状态
+     *
+     * @param orderNo 订单号，用于标识查询的目标订单
+     * @return 包含支付状态的Result对象，支付状态为布尔值，true表示支付成功，false表示支付失败或未支付
+     */
+    @Operation(summary = "支付状态查询")
+    @LoginCheck
+    @GetMapping("/queryPayStatus/{orderNo}")
+    public Result<Boolean> queryPayStatus(@PathVariable String orderNo) {
+        return Result.ok(orderService.queryPayStatus(orderNo));
+    }
+
 }
 
