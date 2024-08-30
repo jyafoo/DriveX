@@ -3,10 +3,12 @@ package com.atguigu.daijia.payment.service.impl;
 
 import com.alibaba.fastjson.JSON;
 // import com.atguigu.daijia.common.constant.MqConst;
+import com.atguigu.daijia.common.constant.MqConst;
 import com.atguigu.daijia.common.execption.GuiguException;
 import com.atguigu.daijia.common.result.ResultCodeEnum;
 
 // import com.atguigu.daijia.common.service.RabbitService;
+import com.atguigu.daijia.common.service.RabbitService;
 import com.atguigu.daijia.common.util.RequestUtils;
 import com.atguigu.daijia.driver.client.DriverAccountFeignClient;
 import com.atguigu.daijia.model.entity.payment.PaymentInfo;
@@ -47,6 +49,7 @@ public class WxPayServiceImpl implements WxPayService {
     private final PaymentInfoMapper paymentInfoMapper;
     private final WxPayV3Properties wxPayV3Properties;
     private final RSAAutoCertificateConfig rsaAutoCertificateConfig;
+    private final RabbitService rabbitService;
 
     @Override
     public WxPrepayVo createWxPayment(PaymentInfoForm paymentInfoForm) {
@@ -176,9 +179,44 @@ public class WxPayServiceImpl implements WxPayService {
      * @param transaction 交易对象，包含了进行支付所需的所有信息，如支付金额、支付方式、交易双方等
      *                    详细信息具体Transaction类的结构和字段信息需参考其类定义
      */
-    // TODO (JIA,2024/8/30,9:35) 待补充
     private void handlePayment(Transaction transaction) {
+        // TODO (JIA,2024/8/30,21:36) 亮点七：支付成功后，使用rabbitmq实现异步存储支付后处理逻辑（消息发送端）
+        //1 更新支付记录，状态修改为 已经支付
+        //订单编号
+        String orderNo = transaction.getOutTradeNo();
+        //根据订单编号查询支付记录
+        LambdaQueryWrapper<PaymentInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(PaymentInfo::getOrderNo,orderNo);
+        PaymentInfo paymentInfo = paymentInfoMapper.selectOne(wrapper);
+        //如果已经支付，不需要更新
+        if(paymentInfo.getPaymentStatus() == 1) {
+            return;
+        }
 
+        paymentInfo.setPaymentStatus(1);
+        paymentInfo.setOrderNo(transaction.getOutTradeNo());
+        paymentInfo.setTransactionId(transaction.getTransactionId());
+        paymentInfo.setCallbackTime(new Date());
+        paymentInfo.setCallbackContent(JSON.toJSONString(transaction));
+
+        paymentInfoMapper.updateById(paymentInfo);
+
+        //2 发送端：发送mq消息，传递 订单编号
+        //  接收端：获取订单编号，完成后续处理
+        rabbitService.sendMessage(MqConst.EXCHANGE_ORDER,
+                MqConst.ROUTING_PAY_SUCCESS,
+                orderNo);
+    }
+
+    //支付成功后续处理
+    @Override
+    public void handleOrder(String orderNo) {
+        // TODO (JIA,2024/8/30,21:36) 亮点七：支付成功后，使用rabbitmq实现异步存储支付后处理逻辑（消息执行端）
+        //1 远程调用：更新订单状态：已经支付
+
+        //2 远程调用：获取系统奖励，打入到司机账户
+
+        //3 TODO 其他
 
     }
 

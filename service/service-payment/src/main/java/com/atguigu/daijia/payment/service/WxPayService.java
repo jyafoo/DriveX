@@ -32,4 +32,10 @@ public interface WxPayService {
      * @param request HTTP请求对象，包含微信支付的通知信息
      */
     void wxnotify(HttpServletRequest request);
+
+    /**
+     * 支付成功后续处理
+     * @param orderNo
+     */
+    void handleOrder(String orderNo);
 }
