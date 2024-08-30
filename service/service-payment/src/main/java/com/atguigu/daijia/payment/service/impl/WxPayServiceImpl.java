@@ -5,8 +5,9 @@ import com.alibaba.fastjson.JSON;
 // import com.atguigu.daijia.common.constant.MqConst;
 import com.atguigu.daijia.common.execption.GuiguException;
 import com.atguigu.daijia.common.result.ResultCodeEnum;
+
 // import com.atguigu.daijia.common.service.RabbitService;
-// import com.atguigu.daijia.common.util.RequestUtils;
+import com.atguigu.daijia.common.util.RequestUtils;
 import com.atguigu.daijia.driver.client.DriverAccountFeignClient;
 import com.atguigu.daijia.model.entity.payment.PaymentInfo;
 import com.atguigu.daijia.model.enums.TradeType;
@@ -129,6 +130,41 @@ public class WxPayServiceImpl implements WxPayService {
         return false;
     }
 
+    @Override
+    public void wxnotify(HttpServletRequest request) {
+        //1.回调通知的验签与解密
+        //从request头信息获取参数
+        //HTTP 头 Wechatpay-Signature
+        // HTTP 头 Wechatpay-Nonce
+        //HTTP 头 Wechatpay-Timestamp
+        //HTTP 头 Wechatpay-Serial
+        //HTTP 头 Wechatpay-Signature-Type
+        //HTTP 请求体 body。切记使用原始报文，不要用 JSON 对象序列化后的字符串，避免验签的 body 和原文不一致。
+        String wechatPaySerial = request.getHeader("Wechatpay-Serial");
+        String nonce = request.getHeader("Wechatpay-Nonce");
+        String timestamp = request.getHeader("Wechatpay-Timestamp");
+        String signature = request.getHeader("Wechatpay-Signature");
+        String requestBody = RequestUtils.readData(request);
+
+        //2.构造 RequestParam
+        RequestParam requestParam = new RequestParam.Builder()
+                .serialNumber(wechatPaySerial)
+                .nonce(nonce)
+                .signature(signature)
+                .timestamp(timestamp)
+                .body(requestBody)
+                .build();
+
+        //3.初始化 NotificationParser
+        NotificationParser parser = new NotificationParser(rsaAutoCertificateConfig);
+        //4.以支付通知回调为例，验签、解密并转换成 Transaction
+        Transaction transaction = parser.parse(requestParam, Transaction.class);
+
+        if(null != transaction && transaction.getTradeState() == Transaction.TradeStateEnum.SUCCESS) {
+            //5.处理支付业务
+            this.handlePayment(transaction);
+        }
+    }
 
     /**
      * 处理支付操作
@@ -140,6 +176,7 @@ public class WxPayServiceImpl implements WxPayService {
      * @param transaction 交易对象，包含了进行支付所需的所有信息，如支付金额、支付方式、交易双方等
      *                    详细信息具体Transaction类的结构和字段信息需参考其类定义
      */
+    // TODO (JIA,2024/8/30,9:35) 待补充
     private void handlePayment(Transaction transaction) {
 
 

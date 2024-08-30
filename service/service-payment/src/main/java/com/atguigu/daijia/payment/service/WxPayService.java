@@ -2,6 +2,7 @@ package com.atguigu.daijia.payment.service;
 
 import com.atguigu.daijia.model.form.payment.PaymentInfoForm;
 import com.atguigu.daijia.model.vo.payment.WxPrepayVo;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface WxPayService {
 
@@ -23,4 +24,12 @@ public interface WxPayService {
      * @return 返回支付状态的查询结果
      */
     Boolean queryPayStatus(String orderNo);
+
+    /**
+     * 处理微信支付的异步通知
+     * 这个接口用于接收微信支付服务器发送的通知信息，处理支付结果，并向微信支付服务器返回处理状态
+     *
+     * @param request HTTP请求对象，包含微信支付的通知信息
+     */
+    void wxnotify(HttpServletRequest request);
 }
