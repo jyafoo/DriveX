@@ -7,10 +7,7 @@ import com.atguigu.daijia.model.form.order.StartDriveForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderBillForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
 import com.atguigu.daijia.model.vo.base.PageVo;
-import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
-import com.atguigu.daijia.model.vo.order.OrderBillVo;
-import com.atguigu.daijia.model.vo.order.OrderPayVo;
-import com.atguigu.daijia.model.vo.order.OrderProfitsharingVo;
+import com.atguigu.daijia.model.vo.order.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -178,4 +175,12 @@ public interface OrderInfoFeignClient {
      */
     @GetMapping("/order/info/updateOrderPayStatus/{orderNo}")
     Result<Boolean> updateOrderPayStatus(@PathVariable("orderNo") String orderNo);
+
+    /**
+     * 获取订单的系统奖励
+     * @param orderNo
+     * @return
+     */
+    @GetMapping("/order/info/getOrderRewardFee/{orderNo}")
+    Result<OrderRewardVo> getOrderRewardFee(@PathVariable("orderNo") String orderNo);
 }

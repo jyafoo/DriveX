@@ -10,10 +10,7 @@ import com.atguigu.daijia.model.form.order.StartDriveForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderBillForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
 import com.atguigu.daijia.model.vo.base.PageVo;
-import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
-import com.atguigu.daijia.model.vo.order.OrderBillVo;
-import com.atguigu.daijia.model.vo.order.OrderPayVo;
-import com.atguigu.daijia.model.vo.order.OrderProfitsharingVo;
+import com.atguigu.daijia.model.vo.order.*;
 import com.atguigu.daijia.order.service.OrderInfoService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -272,6 +269,18 @@ public class OrderInfoController {
     @GetMapping("/updateOrderPayStatus/{orderNo}")
     public Result<Boolean> updateOrderPayStatus(@PathVariable String orderNo) {
         return Result.ok(orderInfoService.updateOrderPayStatus(orderNo));
+    }
+
+    /**
+     * 获取订单的系统奖励信息
+     *
+     * @param orderNo 订单编号，用于识别特定的订单
+     * @return 返回一个封装了订单奖励信息的结果对象
+     */
+    @Operation(summary = "获取订单的系统奖励")
+    @GetMapping("/getOrderRewardFee/{orderNo}")
+    public Result<OrderRewardVo> getOrderRewardFee(@PathVariable String orderNo) {
+        return Result.ok(orderInfoService.getOrderRewardFee(orderNo));
     }
 }
 
