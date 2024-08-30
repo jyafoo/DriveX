@@ -50,6 +50,8 @@ public class WxPayServiceImpl implements WxPayService {
     private final WxPayV3Properties wxPayV3Properties;
     private final RSAAutoCertificateConfig rsaAutoCertificateConfig;
     private final RabbitService rabbitService;
+    private final OrderInfoFeignClient orderInfoFeignClient;
+    private final DriverAccountFeignClient driverAccountFeignClient;
 
     @Override
     public WxPrepayVo createWxPayment(PaymentInfoForm paymentInfoForm) {
@@ -213,8 +215,19 @@ public class WxPayServiceImpl implements WxPayService {
     public void handleOrder(String orderNo) {
         // TODO (JIA,2024/8/30,21:36) 亮点七：支付成功后，使用rabbitmq实现异步存储支付后处理逻辑（消息执行端）
         //1 远程调用：更新订单状态：已经支付
+        orderInfoFeignClient.updateOrderPayStatus(orderNo);
 
         //2 远程调用：获取系统奖励，打入到司机账户
+        OrderRewardVo orderRewardVo = orderInfoFeignClient.getOrderRewardFee(orderNo).getData();
+        if(orderRewardVo != null && orderRewardVo.getRewardFee().doubleValue()>0) {
+            TransferForm transferForm = new TransferForm();
+            transferForm.setTradeNo(orderNo);
+            transferForm.setTradeType(TradeType.REWARD.getType());
+            transferForm.setContent(TradeType.REWARD.getContent());
+            transferForm.setAmount(orderRewardVo.getRewardFee());
+            transferForm.setDriverId(orderRewardVo.getDriverId());
+            driverAccountFeignClient.transfer(transferForm);
+        }
 
         //3 TODO 其他
 
