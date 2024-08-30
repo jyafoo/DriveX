@@ -145,4 +145,12 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 订单支付信息的OrderPayVo对象如果获取失败，可能返回错误信息
      */
     OrderPayVo getOrderPayVo(String orderNo, Long customerId);
+
+    /**
+     * 更改订单支付状态
+     *
+     * @param orderNo 订单编号，用于识别特定订单
+     * @return 操作结果，指示支付状态是否更新成功
+     */
+    Boolean updateOrderPayStatus(String orderNo);
 }

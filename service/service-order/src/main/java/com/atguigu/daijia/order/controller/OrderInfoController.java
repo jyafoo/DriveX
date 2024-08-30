@@ -262,5 +262,16 @@ public class OrderInfoController {
         return Result.ok(orderInfoService.getOrderPayVo(orderNo, customerId));
     }
 
+    /**
+     * 更改订单支付状态
+     *
+     * @param orderNo 订单编号，用于识别特定订单
+     * @return 操作结果，指示支付状态是否更新成功
+     */
+    @Operation(summary = "更改订单支付状态")
+    @GetMapping("/updateOrderPayStatus/{orderNo}")
+    public Result<Boolean> updateOrderPayStatus(@PathVariable String orderNo) {
+        return Result.ok(orderInfoService.updateOrderPayStatus(orderNo));
+    }
 }
 
