@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
-"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+PUBLIC "-//mybatis.apache.org//DTD Mapper 3.0//EN"
+"http://mybatis.apache.org/dtd/mybatis-3-mapper.dtd">
 
 
 <mapper namespace="com.atguigu.daijia.driver.mapper.DriverAccountMapper">
@@ -14,5 +14,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		id,user_id,total_amount,lock_amount,available_amount,total_income_amount,total_pay_amount,create_time,update_time,is_deleted
 	</sql>
 
+	<update id="add">
+		update driver_account
+		set total_amount = total_amount + #{amount}, available_amount = available_amount + #{amount}, total_income_amount = total_income_amount + #{amount}
+		where driver_id = #{driverId}
+	</update>
 </mapper>
 

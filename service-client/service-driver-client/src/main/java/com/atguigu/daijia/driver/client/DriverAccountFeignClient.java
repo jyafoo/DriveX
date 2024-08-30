@@ -10,4 +10,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface DriverAccountFeignClient {
 
 
+    /**
+     * 转账
+     *
+     * @param transferForm
+     * @return
+     */
+    @PostMapping("/driver/account/transfer")
+    Result<Boolean> transfer(@RequestBody TransferForm transferForm);
+
+
 }
