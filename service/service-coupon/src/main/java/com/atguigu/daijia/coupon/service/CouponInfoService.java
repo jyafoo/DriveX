@@ -36,4 +36,14 @@ public interface CouponInfoService extends IService<CouponInfo> {
      * @return 返回一个PageVo对象，包含分页后的已使用优惠券信息
      */
     PageVo<UsedCouponVo> findUsedPage(Page<CouponInfo> pageParam, Long customerId);
+
+    /**
+     * 用户领取优惠券的接口
+     *
+     * @param customerId 领取优惠券的用户ID，用于标识特定的用户
+     * @param couponId 领取的优惠券ID，用于标识特定的优惠券
+     * @return 返回一个Result对象，其中包含一个Boolean值，表示领取优惠券的操作是否成功
+     */
+    Boolean receive(Long customerId, Long couponId);
+
 }

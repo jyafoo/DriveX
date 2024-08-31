@@ -101,5 +101,18 @@ public class CouponInfoController {
         return Result.ok(pageVo);
     }
 
+    /**
+     * 用户领取优惠券的接口
+     *
+     * @param customerId 领取优惠券的用户ID，用于标识特定的用户
+     * @param couponId 领取的优惠券ID，用于标识特定的优惠券
+     * @return 返回一个Result对象，其中包含一个Boolean值，表示领取优惠券的操作是否成功
+     */
+    @Operation(summary = "领取优惠券")
+    @GetMapping("/receive/{customerId}/{couponId}")
+    public Result<Boolean> receive(@PathVariable Long customerId, @PathVariable Long couponId) {
+        return Result.ok(couponInfoService.receive(customerId, couponId));
+    }
+
 }
 

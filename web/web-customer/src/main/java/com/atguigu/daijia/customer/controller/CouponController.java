@@ -90,5 +90,19 @@ public class CouponController {
         return Result.ok(pageVo);
     }
 
+    /**
+     * 用户领取优惠券的接口
+     *
+     * @param couponId 领取的优惠券ID，用于标识特定的优惠券
+     * @return 返回一个Result对象，其中包含一个Boolean值，表示领取优惠券的操作是否成功
+     */
+    @Operation(summary = "领取优惠券")
+    @LoginCheck
+    @GetMapping("/receive/{couponId}")
+    public Result<Boolean> receive(@PathVariable Long couponId) {
+        Long customerId = AuthContextHolder.getUserId();
+        return Result.ok(couponService.receive(customerId, couponId));
+    }
+
 }
 

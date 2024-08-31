@@ -34,4 +34,9 @@ public class CouponServiceImpl implements CouponService {
         return couponFeignClient.findUsedPage(customerId, page, limit).getData();
     }
 
+    @Override
+    public Boolean receive(Long customerId, Long couponId) {
+        return couponFeignClient.receive(customerId, couponId).getData();
+    }
+
 }
