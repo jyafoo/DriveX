@@ -158,4 +158,11 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 返回一个封装了订单奖励信息的结果对象
      */
     OrderRewardVo getOrderRewardFee(String orderNo);
+
+    /**
+     * 取消指定的订单
+     *
+     * @param orderId 订单ID，用于标识需要取消的订单
+     */
+    void orderCancel(long orderId);
 }

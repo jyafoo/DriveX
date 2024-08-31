@@ -22,6 +22,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RBlockingQueue;
+import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
@@ -31,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -61,6 +64,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         // 记录日志
         this.log(orderInfo.getId(), orderInfo.getStatus());
 
+        //生成订单之后，发送延迟消息
+        this.sendDelayMessage(orderInfo.getId());
+
         // TODO (JIA,2024/8/22,21:09) 亮点四：司机抢单（1、乘客下单那将订单标识先保存至redis）
         // 接单标识，标识不存在了说明不在等待接单状态了
         redisTemplate.opsForValue().set(
@@ -69,6 +75,30 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 RedisConstant.ORDER_ACCEPT_MARK_EXPIRES_TIME,
                 TimeUnit.MINUTES);
         return orderInfo.getId();
+    }
+
+    /**
+     * 发送延迟消息
+     *
+     * @param orderId 订单ID 这是一个长整型的订单标识符，用于唯一标识一个订单
+     */
+    private void sendDelayMessage(Long orderId) {
+        // TODO (JIA,2024/8/31,12:12) 亮点八：使用mq的ttl+死信队列实现订单的超时取消（延迟消息发送）
+        try{
+            //1 创建队列
+            RBlockingQueue<Object> blockingDueue = redissonClient.getBlockingQueue("queue_cancel");
+
+            //2 把创建队列放到延迟队列里面
+            RDelayedQueue<Object> delayedQueue = redissonClient.getDelayedQueue(blockingDueue);
+
+            //3 发送消息到延迟队列里面
+            //设置过期时间
+            delayedQueue.offer(orderId.toString(),15,TimeUnit.MINUTES);
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            throw new GuiguException(ResultCodeEnum.DATA_ERROR);
+        }
     }
 
 
@@ -454,4 +484,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
 
+    @Override
+    public void orderCancel(long orderId) {
+        // TODO (JIA,2024/8/31,12:12) 亮点八：使用mq的ttl+死信队列实现订单的超时取消（延迟消息消费）
+        //orderId查询订单信息
+        OrderInfo orderInfo = orderInfoMapper.selectById(orderId);
+        //判断
+        if(Objects.equals(orderInfo.getStatus(), OrderStatus.WAITING_ACCEPT.getStatus())) {
+            //修改订单状态：取消状态
+            orderInfo.setStatus(OrderStatus.CANCEL_ORDER.getStatus());
+            int rows = orderInfoMapper.updateById(orderInfo);
+            if(rows == 1) {
+                //删除接单标识
+                redisTemplate.delete(RedisConstant.ORDER_ACCEPT_MARK);
+            }
+        }
+    }
 }
