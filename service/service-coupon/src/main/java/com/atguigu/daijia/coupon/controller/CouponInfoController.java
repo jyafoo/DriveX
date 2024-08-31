@@ -3,6 +3,7 @@ package com.atguigu.daijia.coupon.controller;
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.coupon.service.CouponInfoService;
 import com.atguigu.daijia.model.entity.coupon.CouponInfo;
+import com.atguigu.daijia.model.form.coupon.UseCouponForm;
 import com.atguigu.daijia.model.vo.base.PageVo;
 import com.atguigu.daijia.model.vo.coupon.AvailableCouponVo;
 import com.atguigu.daijia.model.vo.coupon.NoReceiveCouponVo;
@@ -14,10 +15,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -129,6 +127,18 @@ public class CouponInfoController {
     @GetMapping("/findAvailableCoupon/{customerId}/{orderAmount}")
     public Result<List<AvailableCouponVo>> findAvailableCoupon(@PathVariable Long customerId, @PathVariable BigDecimal orderAmount) {
         return Result.ok(couponInfoService.findAvailableCoupon(customerId, orderAmount));
+    }
+
+    /**
+     * 使用优惠券
+     *
+     * @param useCouponForm 包含优惠券使用信息的表单
+     * @return 返回一个Result对象，其中包含BigDecimal类型的数据，表示使用优惠券后的结果金额
+     */
+    @Operation(summary = "使用优惠券")
+    @PostMapping("/useCoupon")
+    public Result<BigDecimal> useCoupon(@RequestBody UseCouponForm useCouponForm) {
+        return Result.ok(couponInfoService.useCoupon(useCouponForm));
     }
 
 }

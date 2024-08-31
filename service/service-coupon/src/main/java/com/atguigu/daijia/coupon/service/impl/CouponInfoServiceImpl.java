@@ -8,6 +8,7 @@ import com.atguigu.daijia.coupon.mapper.CustomerCouponMapper;
 import com.atguigu.daijia.coupon.service.CouponInfoService;
 import com.atguigu.daijia.model.entity.coupon.CouponInfo;
 import com.atguigu.daijia.model.entity.coupon.CustomerCoupon;
+import com.atguigu.daijia.model.form.coupon.UseCouponForm;
 import com.atguigu.daijia.model.vo.base.PageVo;
 import com.atguigu.daijia.model.vo.coupon.AvailableCouponVo;
 import com.atguigu.daijia.model.vo.coupon.NoReceiveCouponVo;
@@ -167,6 +168,7 @@ public class CouponInfoServiceImpl extends ServiceImpl<CouponInfoMapper, CouponI
 
     @Override
     public List<AvailableCouponVo> findAvailableCoupon(Long customerId, BigDecimal orderAmount) {
+        // TODO (JIA,2024/8/31,21:52) 待看1
         //1.定义符合条件的优惠券信息容器
         List<AvailableCouponVo> availableCouponVoList = new ArrayList<>();
 
@@ -238,6 +240,67 @@ public class CouponInfoServiceImpl extends ServiceImpl<CouponInfoMapper, CouponI
         bestNoUseCouponVo.setReduceAmount(reduceAmount);
         // 返回填充完整的AvailableCouponVo对象，代表最佳未使用的优惠券信息
         return bestNoUseCouponVo;
+    }
+
+    @Transactional(noRollbackFor = Exception.class)
+    @Override
+    public BigDecimal useCoupon(UseCouponForm useCouponForm) {
+        //获取乘客优惠券
+        CustomerCoupon customerCoupon = customerCouponMapper.selectById(useCouponForm.getCustomerCouponId());
+        if(null == customerCoupon) {
+            throw new GuiguException(ResultCodeEnum.ARGUMENT_VALID_ERROR);
+        }
+        //获取优惠券信息
+        CouponInfo couponInfo = couponInfoMapper.selectById(customerCoupon.getCouponId());
+        if(null == couponInfo) {
+            throw new GuiguException(ResultCodeEnum.ARGUMENT_VALID_ERROR);
+        }
+        //判断该优惠券是否为乘客所有
+        if(customerCoupon.getCustomerId().longValue() != useCouponForm.getCustomerId().longValue()) {
+            throw new GuiguException(ResultCodeEnum.ILLEGAL_REQUEST);
+        }
+        //获取优惠券减免金额
+        BigDecimal reduceAmount = null;
+        if(couponInfo.getCouponType().intValue() == 1) {
+            //使用门槛判断
+            //2.1.1.没门槛，订单金额必须大于优惠券减免金额
+            if (couponInfo.getConditionAmount().doubleValue() == 0 && useCouponForm.getOrderAmount().subtract(couponInfo.getAmount()).doubleValue() > 0) {
+                //减免金额
+                reduceAmount = couponInfo.getAmount();
+            }
+            //2.1.2.有门槛，订单金额大于优惠券门槛金额
+            if (couponInfo.getConditionAmount().doubleValue() > 0 && useCouponForm.getOrderAmount().subtract(couponInfo.getConditionAmount()).doubleValue() > 0) {
+                //减免金额
+                reduceAmount = couponInfo.getAmount();
+            }
+        } else {
+            //使用门槛判断
+            //订单折扣后金额
+            BigDecimal discountOrderAmount = useCouponForm.getOrderAmount().multiply(couponInfo.getDiscount()).divide(new BigDecimal("10")).setScale(2, RoundingMode.HALF_UP);
+            //订单优惠金额
+            //2.2.1.没门槛
+            if (couponInfo.getConditionAmount().doubleValue() == 0) {
+                //减免金额
+                reduceAmount = useCouponForm.getOrderAmount().subtract(discountOrderAmount);
+            }
+            //2.2.2.有门槛，订单折扣后金额大于优惠券门槛金额
+            if (couponInfo.getConditionAmount().doubleValue() > 0 && discountOrderAmount.subtract(couponInfo.getConditionAmount()).doubleValue() > 0) {
+                //减免金额
+                reduceAmount = useCouponForm.getOrderAmount().subtract(discountOrderAmount);
+            }
+        }
+        if(reduceAmount.doubleValue() > 0) {
+            int row = couponInfoMapper.updateUseCount(couponInfo.getId());
+            if(row == 1) {
+                CustomerCoupon updateCustomerCoupon = new CustomerCoupon();
+                updateCustomerCoupon.setId(customerCoupon.getId());
+                updateCustomerCoupon.setUsedTime(new Date());
+                updateCustomerCoupon.setOrderId(useCouponForm.getOrderId());
+                customerCouponMapper.updateById(updateCustomerCoupon);
+                return reduceAmount;
+            }
+        }
+        throw new GuiguException(ResultCodeEnum.DATA_ERROR);
     }
 
 }

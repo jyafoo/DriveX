@@ -66,4 +66,12 @@ public interface CouponInfoMapper extends BaseMapper<CouponInfo> {
      * @return 返回一个包含所有未使用优惠券的列表，以NoUseCouponVo形式表示
      */
     List<NoUseCouponVo> findNoUseList(@Param("customerId") Long customerId);
+
+    /**
+     * 更新优惠券使用次数
+     *
+     * @param id 要更新使用次数的ID
+     * @return 更新操作影响的行数
+     */
+    int updateUseCount(@Param("id") Long id);
 }

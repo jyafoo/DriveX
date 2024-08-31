@@ -1,6 +1,7 @@
 package com.atguigu.daijia.coupon.service;
 
 import com.atguigu.daijia.model.entity.coupon.CouponInfo;
+import com.atguigu.daijia.model.form.coupon.UseCouponForm;
 import com.atguigu.daijia.model.vo.base.PageVo;
 import com.atguigu.daijia.model.vo.coupon.AvailableCouponVo;
 import com.atguigu.daijia.model.vo.coupon.NoReceiveCouponVo;
@@ -58,4 +59,12 @@ public interface CouponInfoService extends IService<CouponInfo> {
      * @return 返回一个Result对象，其中包含客户未使用的最佳优惠券信息
      */
     List<AvailableCouponVo> findAvailableCoupon(Long customerId, BigDecimal orderAmount);
+
+    /**
+     * 使用优惠券
+     *
+     * @param useCouponForm 包含优惠券使用信息的表单
+     * @return 返回一个Result对象，其中包含BigDecimal类型的数据，表示使用优惠券后的结果金额
+     */
+    BigDecimal useCoupon(UseCouponForm useCouponForm);
 }
