@@ -3,6 +3,7 @@ package com.atguigu.daijia.customer.service;
 import com.atguigu.daijia.model.vo.base.PageVo;
 import com.atguigu.daijia.model.vo.coupon.NoReceiveCouponVo;
 import com.atguigu.daijia.model.vo.coupon.NoUseCouponVo;
+import com.atguigu.daijia.model.vo.coupon.UsedCouponVo;
 
 public interface CouponService  {
 
@@ -18,5 +19,21 @@ public interface CouponService  {
     PageVo<NoReceiveCouponVo> findNoReceivePage(Long customerId, Long page, Long limit);
 
 
+    /**
+     * 查询未使用的优惠券分页列表
+     *
+     * @param customerId 用户ID，用于定位特定用户的优惠券信息
+     * @param page 当前页码，用于分页查询
+     * @param limit 每页显示的数量，用于分页查询
+     * @return 返回一个PageVo对象，包含未使用的NoUseCouponVo类型的分页数据
+     */
     PageVo<NoUseCouponVo> findNoUsePage(Long customerId, Long page, Long limit);
+
+    /**
+     * 查询已使用的优惠券分页数据
+     *
+     * @param customerId 客户ID，用于筛选特定客户的已使用优惠券
+     * @return 返回一个PageVo对象，包含分页后的已使用优惠券信息
+     */
+    PageVo<UsedCouponVo> findUsedPage(Long customerId, Long page, Long limit);
 }
