@@ -49,5 +49,11 @@ public interface CouponInfoMapper extends BaseMapper<CouponInfo> {
      */
     int updateReceiveCount(@Param("id") Long couponId);
 
-
+    /**
+     * 更新指定优惠券的领取数量
+     *
+     * @param couponId 优惠券的唯一标识符，用于定位数据库中的优惠券记录
+     * @return 受影响的行数，表示更新操作是否成功
+     */
+    int updateReceiveCountByLimit(Long couponId);
 }

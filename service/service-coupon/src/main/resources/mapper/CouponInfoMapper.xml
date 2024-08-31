@@ -83,7 +83,10 @@ PUBLIC "-//mybatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<update id="updateReceiveCount">
-		update coupon_info set receive_count = receive_count + 1 where id = #{id}
+		update coupon_info
+			set receive_count = receive_count + 1
+		where id = #{id}
+			and receive_count &lt; publish_count  <!--版本号判断-->
 	</update>
 
 	<update id="updateReceiveCountByLimit">
