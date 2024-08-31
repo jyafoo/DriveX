@@ -5,6 +5,7 @@ import com.atguigu.daijia.coupon.service.CouponInfoService;
 import com.atguigu.daijia.model.entity.coupon.CouponInfo;
 import com.atguigu.daijia.model.vo.base.PageVo;
 import com.atguigu.daijia.model.vo.coupon.NoReceiveCouponVo;
+import com.atguigu.daijia.model.vo.coupon.NoUseCouponVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -46,6 +47,30 @@ public class CouponInfoController {
             @PathVariable Long limit) {
         Page<CouponInfo> pageParam = new Page<>(page, limit);
         PageVo<NoReceiveCouponVo> pageVo = couponInfoService.findNoReceivePage(pageParam, customerId);
+        pageVo.setPage(page);
+        pageVo.setLimit(limit);
+        return Result.ok(pageVo);
+    }
+
+    /**
+     * 查询未使用的优惠券列表
+     *
+     * @param customerId 客户ID，用于筛选属于特定客户的优惠券
+     * @return 返回分页查询结果PageVo<NoUseCouponVo>，包含未使用的优惠券信息和分页相关数据
+     */
+    @Operation(summary = "查询未使用优惠券分页列表")
+    @GetMapping("findNoUsePage/{customerId}/{page}/{limit}")
+    public Result<PageVo<NoUseCouponVo>> findNoUsePage(
+            @Parameter(name = "customerId", description = "乘客id", required = true)
+            @PathVariable Long customerId,
+
+            @Parameter(name = "page", description = "当前页码", required = true)
+            @PathVariable Long page,
+
+            @Parameter(name = "limit", description = "每页记录数", required = true)
+            @PathVariable Long limit) {
+        Page<CouponInfo> pageParam = new Page<>(page, limit);
+        PageVo<NoUseCouponVo> pageVo = couponInfoService.findNoUsePage(pageParam, customerId);
         pageVo.setPage(page);
         pageVo.setLimit(limit);
         return Result.ok(pageVo);
