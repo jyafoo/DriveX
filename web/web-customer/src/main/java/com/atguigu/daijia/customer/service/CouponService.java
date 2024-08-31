@@ -1,9 +1,12 @@
 package com.atguigu.daijia.customer.service;
 
 import com.atguigu.daijia.model.vo.base.PageVo;
+import com.atguigu.daijia.model.vo.coupon.AvailableCouponVo;
 import com.atguigu.daijia.model.vo.coupon.NoReceiveCouponVo;
 import com.atguigu.daijia.model.vo.coupon.NoUseCouponVo;
 import com.atguigu.daijia.model.vo.coupon.UsedCouponVo;
+
+import java.util.List;
 
 public interface CouponService  {
 
@@ -45,4 +48,12 @@ public interface CouponService  {
      * @return 返回一个Result对象，其中包含一个Boolean值，表示领取优惠券的操作是否成功
      */
     Boolean receive(Long customerId, Long couponId);
+
+    /**
+     * 获取未使用的最佳优惠券信息
+     *
+     * @param customerId 客户ID，用于识别特定客户
+     * @return 返回一个Result对象，其中包含客户未使用的最佳优惠券信息
+     */
+    List<AvailableCouponVo> findAvailableCoupon(Long customerId, Long orderId);
 }

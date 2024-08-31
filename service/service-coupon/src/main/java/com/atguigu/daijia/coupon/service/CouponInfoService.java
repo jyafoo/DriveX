@@ -2,11 +2,15 @@ package com.atguigu.daijia.coupon.service;
 
 import com.atguigu.daijia.model.entity.coupon.CouponInfo;
 import com.atguigu.daijia.model.vo.base.PageVo;
+import com.atguigu.daijia.model.vo.coupon.AvailableCouponVo;
 import com.atguigu.daijia.model.vo.coupon.NoReceiveCouponVo;
 import com.atguigu.daijia.model.vo.coupon.NoUseCouponVo;
 import com.atguigu.daijia.model.vo.coupon.UsedCouponVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 public interface CouponInfoService extends IService<CouponInfo> {
 
@@ -46,4 +50,12 @@ public interface CouponInfoService extends IService<CouponInfo> {
      */
     Boolean receive(Long customerId, Long couponId);
 
+    /**
+     * 获取未使用的最佳优惠券信息
+     *
+     * @param customerId 客户ID，用于识别特定客户
+     * @param orderAmount 订单金额，用于计算和匹配优惠券的使用条件
+     * @return 返回一个Result对象，其中包含客户未使用的最佳优惠券信息
+     */
+    List<AvailableCouponVo> findAvailableCoupon(Long customerId, BigDecimal orderAmount);
 }
