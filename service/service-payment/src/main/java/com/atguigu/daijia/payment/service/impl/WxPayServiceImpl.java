@@ -231,8 +231,6 @@ public class WxPayServiceImpl implements WxPayService {
             driverAccountFeignClient.transfer(transferForm);
         }
 
-        //3 TODO 其他
-
     }
 
 }

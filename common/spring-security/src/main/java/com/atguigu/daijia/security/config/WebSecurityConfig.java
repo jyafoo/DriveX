@@ -78,7 +78,6 @@ public class WebSecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 // 添加身份验证
                 .and()
-                // TODO 添加身份验证1
                 .authenticationProvider(authenticationProvider())
                 // 添加token过滤器
                 .addFilterBefore(new TokenAuthenticationFilter(redisTemplate), UsernamePasswordAuthenticationFilter.class)

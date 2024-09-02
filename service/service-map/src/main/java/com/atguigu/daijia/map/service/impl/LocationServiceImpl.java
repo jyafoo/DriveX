@@ -55,6 +55,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public Boolean updateDriverLocation(UpdateDriverLocationForm updateDriverLocationForm) {
+        // TODO (JIA,2024/8/18,11:46) 亮点一：通过redis的geo实现搜索附近满足条件的司机（将司机经纬度封装到point中存储到redis中）
         /**
          *  Redis GEO 主要用于存储地理位置信息，并对存储的信息进行相关操作，该功能在 Redis 3.2 版本新增。
          *  后续用在，乘客下单后寻找5公里范围内开启接单服务的司机，通过Redis GEO进行计算
@@ -72,7 +73,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public List<NearByDriverVo> searchNearByDriver(SearchNearByDriverForm searchNearByDriverForm) {
-        // TODO (JIA,2024/8/18,11:46) 亮点一：通过redis的geo实现搜索附近满足条件的司机
+        // TODO (JIA,2024/8/18,11:46) 亮点一：通过redis的geo实现搜索附近满足条件的司机（通过乘客经纬度及里程信息获取附近司机信息）
         // 搜索经纬度位置5公里以内的司机
         // 定义经纬度点
         Point point = new Point(searchNearByDriverForm.getLongitude().doubleValue(), searchNearByDriverForm.getLatitude().doubleValue());
