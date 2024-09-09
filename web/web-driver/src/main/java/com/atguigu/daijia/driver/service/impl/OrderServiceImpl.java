@@ -160,6 +160,8 @@ public class OrderServiceImpl implements OrderService {
     public Boolean endDrive(OrderFeeForm orderFeeForm) {
         // TODO (JIA,2024/8/29,9:55) 难点：司机结束代驾相关数据的结算流程及调用情况
         // TODO (JIA,2024/8/29,12:41) 亮点六：通过自定义线程池结合CompletableFuture实现订单数据的异步编排
+
+        long start = System.currentTimeMillis();
         //1.获取订单信息
         CompletableFuture<OrderInfo> orderInfoCompletableFuture = CompletableFuture.supplyAsync(() -> {
             OrderInfo orderInfo = orderInfoFeignClient.getOrderInfo(orderFeeForm.getOrderId()).getData();
@@ -281,6 +283,9 @@ public class OrderServiceImpl implements OrderService {
 
         //8.结束代驾更新账单
         orderInfoFeignClient.endDrive(updateOrderBillForm);
+
+        long end = System.currentTimeMillis();
+        log.info("耗时：{}",end - start);
         return true;
     }
 

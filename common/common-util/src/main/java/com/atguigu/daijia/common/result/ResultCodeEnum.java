@@ -43,6 +43,8 @@ public enum ResultCodeEnum {
     AUTH_ERROR( 217, "认证通过后才可以开启代驾服务"),
     FACE_ERROR( 250, "当日未进行人脸识别"),
 
+    MESSAGE_HANDLE_ERROR(260,"消息处理失败"),
+
     COUPON_EXPIRE( 250, "优惠券已过期"),
     COUPON_LESS( 250, "优惠券库存不足"),
     COUPON_USER_LIMIT( 250, "超出领取数量");

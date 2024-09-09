@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 // import com.atguigu.daijia.common.constant.MqConst;
 import com.atguigu.daijia.common.constant.MqConst;
 import com.atguigu.daijia.common.execption.GuiguException;
+import com.atguigu.daijia.common.idempotent.MessageQueueIdempotentHandler;
 import com.atguigu.daijia.common.result.ResultCodeEnum;
 
 // import com.atguigu.daijia.common.service.RabbitService;
@@ -43,6 +44,8 @@ import java.lang.invoke.LambdaConversionException;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import static com.atguigu.daijia.common.result.ResultCodeEnum.MESSAGE_HANDLE_ERROR;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -54,6 +57,7 @@ public class WxPayServiceImpl implements WxPayService {
     private final RabbitService rabbitService;
     private final OrderInfoFeignClient orderInfoFeignClient;
     private final DriverAccountFeignClient driverAccountFeignClient;
+    private final MessageQueueIdempotentHandler messageIdempotentHandler;
 
     @Override
     public WxPrepayVo createWxPayment(PaymentInfoForm paymentInfoForm) {
@@ -115,21 +119,21 @@ public class WxPayServiceImpl implements WxPayService {
 
     @Override
     public Boolean queryPayStatus(String orderNo) {
-        //1 创建微信操作对象
+        // 1 创建微信操作对象
         JsapiServiceExtension service =
                 new JsapiServiceExtension.Builder().config(rsaAutoCertificateConfig).build();
 
-        //2 封装查询支付状态需要参数
+        // 2 封装查询支付状态需要参数
         QueryOrderByOutTradeNoRequest queryRequest = new QueryOrderByOutTradeNoRequest();
         queryRequest.setMchid(wxPayV3Properties.getMerchantId());
         queryRequest.setOutTradeNo(orderNo);
 
-        //3 调用微信操作对象里面方法实现查询操作
+        // 3 调用微信操作对象里面方法实现查询操作
         Transaction transaction = service.queryOrderByOutTradeNo(queryRequest);
 
-        //4 查询返回结果，根据结果判断
-        if(transaction != null && transaction.getTradeState() == Transaction.TradeStateEnum.SUCCESS) {
-            //5 如果支付成功，调用其他方法实现支付后处理逻辑
+        // 4 查询返回结果，根据结果判断
+        if (transaction != null && transaction.getTradeState() == Transaction.TradeStateEnum.SUCCESS) {
+            // 5 如果支付成功，调用其他方法实现支付后处理逻辑
             this.handlePayment(transaction);
 
             return true;
@@ -139,21 +143,21 @@ public class WxPayServiceImpl implements WxPayService {
 
     @Override
     public void wxnotify(HttpServletRequest request) {
-        //1.回调通知的验签与解密
-        //从request头信息获取参数
-        //HTTP 头 Wechatpay-Signature
+        // 1.回调通知的验签与解密
+        // 从request头信息获取参数
+        // HTTP 头 Wechatpay-Signature
         // HTTP 头 Wechatpay-Nonce
-        //HTTP 头 Wechatpay-Timestamp
-        //HTTP 头 Wechatpay-Serial
-        //HTTP 头 Wechatpay-Signature-Type
-        //HTTP 请求体 body。切记使用原始报文，不要用 JSON 对象序列化后的字符串，避免验签的 body 和原文不一致。
+        // HTTP 头 Wechatpay-Timestamp
+        // HTTP 头 Wechatpay-Serial
+        // HTTP 头 Wechatpay-Signature-Type
+        // HTTP 请求体 body。切记使用原始报文，不要用 JSON 对象序列化后的字符串，避免验签的 body 和原文不一致。
         String wechatPaySerial = request.getHeader("Wechatpay-Serial");
         String nonce = request.getHeader("Wechatpay-Nonce");
         String timestamp = request.getHeader("Wechatpay-Timestamp");
         String signature = request.getHeader("Wechatpay-Signature");
         String requestBody = RequestUtils.readData(request);
 
-        //2.构造 RequestParam
+        // 2.构造 RequestParam
         RequestParam requestParam = new RequestParam.Builder()
                 .serialNumber(wechatPaySerial)
                 .nonce(nonce)
@@ -162,20 +166,20 @@ public class WxPayServiceImpl implements WxPayService {
                 .body(requestBody)
                 .build();
 
-        //3.初始化 NotificationParser
+        // 3.初始化 NotificationParser
         NotificationParser parser = new NotificationParser(rsaAutoCertificateConfig);
-        //4.以支付通知回调为例，验签、解密并转换成 Transaction
+        // 4.以支付通知回调为例，验签、解密并转换成 Transaction
         Transaction transaction = parser.parse(requestParam, Transaction.class);
 
-        if(null != transaction && transaction.getTradeState() == Transaction.TradeStateEnum.SUCCESS) {
-            //5.处理支付业务
+        if (null != transaction && transaction.getTradeState() == Transaction.TradeStateEnum.SUCCESS) {
+            // 5.处理支付业务
             this.handlePayment(transaction);
         }
     }
 
     /**
      * 处理支付操作
-     *
+     * <p>
      * 本函数负责处理与支付相关的交易操作，旨在实现支付逻辑的统一处理支付逻辑可能包括但不限于
      * 支付验证、调用支付接口、记录支付日志等操作此函数的设计遵循单一职责原则，将支付相关
      * 的逻辑封装在此，以提高代码的可维护性和可读性
@@ -185,15 +189,15 @@ public class WxPayServiceImpl implements WxPayService {
      */
     private void handlePayment(Transaction transaction) {
         // TODO (JIA,2024/8/30,21:36) 亮点七：支付成功后，使用rabbitmq实现异步存储支付后处理逻辑（消息发送端）
-        //1 更新支付记录，状态修改为 已经支付
-        //订单编号
+        // 1 更新支付记录，状态修改为 已经支付
+        // 订单编号
         String orderNo = transaction.getOutTradeNo();
-        //根据订单编号查询支付记录
+        // 根据订单编号查询支付记录
         LambdaQueryWrapper<PaymentInfo> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(PaymentInfo::getOrderNo,orderNo);
+        wrapper.eq(PaymentInfo::getOrderNo, orderNo);
         PaymentInfo paymentInfo = paymentInfoMapper.selectOne(wrapper);
-        //如果已经支付，不需要更新
-        if(paymentInfo.getPaymentStatus() == 1) {
+        // 如果已经支付，不需要更新
+        if (paymentInfo.getPaymentStatus() == 1) {
             return;
         }
 
@@ -205,7 +209,7 @@ public class WxPayServiceImpl implements WxPayService {
 
         paymentInfoMapper.updateById(paymentInfo);
 
-        //2 发送端：发送mq消息，传递 订单编号
+        // 2 发送端：发送mq消息，传递 订单编号
         //  接收端：获取订单编号，完成后续处理
         rabbitService.sendMessage(MqConst.EXCHANGE_ORDER,
                 MqConst.ROUTING_PAY_SUCCESS,
@@ -216,21 +220,37 @@ public class WxPayServiceImpl implements WxPayService {
     @Override
     public void handleOrder(String orderNo) {
         // TODO (JIA,2024/8/30,21:36) 亮点七：支付成功后，引入rabbitmq实现异步存储支付后处理逻辑（消息执行端）和seata解决分布式事务问题
-        //1 远程调用：更新订单状态：已经支付
-        orderInfoFeignClient.updateOrderPayStatus(orderNo);
 
-        //2 远程调用：获取系统奖励，打入到司机账户
-        OrderRewardVo orderRewardVo = orderInfoFeignClient.getOrderRewardFee(orderNo).getData();
-        if(orderRewardVo != null && orderRewardVo.getRewardFee().doubleValue()>0) {
-            TransferForm transferForm = new TransferForm();
-            transferForm.setTradeNo(orderNo);
-            transferForm.setTradeType(TradeType.REWARD.getType());
-            transferForm.setContent(TradeType.REWARD.getContent());
-            transferForm.setAmount(orderRewardVo.getRewardFee());
-            transferForm.setDriverId(orderRewardVo.getDriverId());
-            driverAccountFeignClient.transfer(transferForm);
+        if (messageIdempotentHandler.isMessageBeingConsumed(orderNo)) {
+            if(messageIdempotentHandler.isAccomplish(orderNo)){
+                return;
+            }
+            throw new GuiguException(MESSAGE_HANDLE_ERROR);
         }
 
+        try {
+            // 1 远程调用：更新订单状态：已经支付
+            orderInfoFeignClient.updateOrderPayStatus(orderNo);
+
+            // 2 远程调用：获取系统奖励，打入到司机账户
+            OrderRewardVo orderRewardVo = orderInfoFeignClient.getOrderRewardFee(orderNo).getData();
+            if (orderRewardVo != null && orderRewardVo.getRewardFee().doubleValue() > 0) {
+                TransferForm transferForm = new TransferForm();
+                transferForm.setTradeNo(orderNo);
+                transferForm.setTradeType(TradeType.REWARD.getType());
+                transferForm.setContent(TradeType.REWARD.getContent());
+                transferForm.setAmount(orderRewardVo.getRewardFee());
+                transferForm.setDriverId(orderRewardVo.getDriverId());
+                driverAccountFeignClient.transfer(transferForm);
+            }
+        }catch (Exception ex){
+            // 如果处理过程中发生异常，删除消息处理状态，并记录日志，然后抛出异常
+            messageIdempotentHandler.delMessageProcessed(orderNo);
+            log.error("支付后异步存储相关信息异常，消息消费失败",ex);
+        }
+
+        messageIdempotentHandler.setAccomplish(orderNo);
+        log.info("支付后异步存储相关信息消息消费成功");
     }
 
 }
