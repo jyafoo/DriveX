@@ -95,15 +95,22 @@ public class NewOrderServiceImpl implements NewOrderService {
             return;
         }
 
-        // 3 远程调用:搜索附近满足条件可以接单司机
+        // 3 远程调用:搜索附近满足条件可以接单司机，只为队列为空的司机推送订单。
         SearchNearByDriverForm searchNearByDriverForm = new SearchNearByDriverForm();
         searchNearByDriverForm.setLongitude(newOrderTaskVo.getStartPointLongitude());
         searchNearByDriverForm.setLatitude(newOrderTaskVo.getStartPointLatitude());
         searchNearByDriverForm.setMileageDistance(newOrderTaskVo.getExpectDistance());
         List<NearByDriverVo> nearByDriverVoList = locationFeignClient.searchNearByDriver(searchNearByDriverForm).getData();
 
+        // TODO (jyafoo,2024/10/6,21:03) 司机抢单优化：只寻找位置最近且没被推送顶单的司机
         // 4 遍历司机集合，得到每个司机，为每个司机创建临时队列，存储新订单信息
-        nearByDriverVoList.forEach(driver -> {
+        NearByDriverVo driver = nearByDriverVoList.get(0);
+        // 附近没有司机
+        if (driver == null){
+            return;
+        }
+
+        /*nearByDriverVoList.forEach(driver -> {
             // 记录司机id，防止重复推送订单信息
             String repeatKey = RedisConstant.DRIVER_ORDER_REPEAT_LIST + newOrderTaskVo.getOrderId();
             boolean isMember = redisTemplate.opsForSet().isMember(repeatKey, driver.getDriverId());
@@ -143,6 +150,45 @@ public class NewOrderServiceImpl implements NewOrderService {
                 log.info("该新订单信息已放入司机临时队列: {}", JSON.toJSONString(newOrderDataVo));
             }
         });
+        */
+
+        String repeatKey = RedisConstant.DRIVER_ORDER_REPEAT_LIST + newOrderTaskVo.getOrderId();
+        boolean isMember = redisTemplate.opsForSet().isMember(repeatKey, driver.getDriverId());
+        if (!isMember) {
+            // 记录该订单已放入司机容器
+            redisTemplate.opsForSet().add(repeatKey, driver.getDriverId());
+            // 过期时间：15分钟，新订单15分钟没人接单自动取消
+            redisTemplate.expire(
+                    repeatKey,
+                    RedisConstant.DRIVER_ORDER_REPEAT_LIST_EXPIRES_TIME,
+                    TimeUnit.MINUTES
+            );
+
+            // 封装新订单数据返回对象
+            NewOrderDataVo newOrderDataVo = new NewOrderDataVo();
+            newOrderDataVo.setOrderId(newOrderTaskVo.getOrderId());
+            newOrderDataVo.setStartLocation(newOrderTaskVo.getStartLocation());
+            newOrderDataVo.setEndLocation(newOrderTaskVo.getEndLocation());
+            newOrderDataVo.setExpectAmount(newOrderTaskVo.getExpectAmount());
+            newOrderDataVo.setExpectDistance(newOrderTaskVo.getExpectDistance());
+            newOrderDataVo.setExpectTime(newOrderTaskVo.getExpectTime());
+            newOrderDataVo.setFavourFee(newOrderTaskVo.getFavourFee());
+            newOrderDataVo.setDistance(driver.getDistance());
+            newOrderDataVo.setCreateTime(newOrderTaskVo.getCreateTime());
+
+            // 将消息保存到司机的临时队列里面，司机接单了会定时轮询到他的临时队列获取订单消息
+            String key = RedisConstant.DRIVER_ORDER_TEMP_LIST + driver.getDriverId();
+
+            redisTemplate.opsForList().leftPush(key, JSONObject.toJSONString(newOrderDataVo)); // 添加到指定的List的最左侧
+            // 过期时间：1分钟，1分钟未消费，自动过期
+            // 注：司机端开启接单，前端每5秒（远小于1分钟）拉取1次“司机临时队列”里面的新订单消息
+            redisTemplate.expire(
+                    key,
+                    RedisConstant.ORDER_ACCEPT_MARK_EXPIRES_TIME,
+                    TimeUnit.MINUTES
+            );
+            log.info("该新订单信息已放入司机临时队列: {}", JSON.toJSONString(newOrderDataVo));
+        }
     }
 
 

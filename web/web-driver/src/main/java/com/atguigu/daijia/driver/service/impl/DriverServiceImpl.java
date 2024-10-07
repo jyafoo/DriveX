@@ -97,7 +97,6 @@ public class DriverServiceImpl implements DriverService {
         // 3 更新订单状态 1 开始接单
         driverInfoFeignClient.updateServiceStatus(driverId,1);
 
-        // TODO (JIA,2024/8/22,12:36) 但不是很懂这里为什么要删位置信息和队列数据
         // 4 删除redis司机位置信息
         locationFeignClient.removeDriverLocation(driverId);
 
@@ -112,7 +111,6 @@ public class DriverServiceImpl implements DriverService {
         //更新司机的接单状态 0
         driverInfoFeignClient.updateServiceStatus(driverId,0);
 
-        // TODO (JIA,2024/8/22,12:40) 这里要删位置信息和队列数据可以理解
         //删除司机位置信息
         locationFeignClient.removeDriverLocation(driverId);
 

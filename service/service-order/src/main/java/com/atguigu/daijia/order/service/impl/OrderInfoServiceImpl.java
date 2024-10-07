@@ -71,7 +71,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         // TODO (JIA,2024/8/22,21:09) 亮点四：司机抢单（1、乘客下单那将订单标识先保存至redis）
         // 接单标识，标识不存在了说明不在等待接单状态了
         redisTemplate.opsForValue().set(
-                RedisConstant.ORDER_ACCEPT_MARK + orderInfo.getId(),  // TODO (JIA,2024/8/22,21:23) key不用订单id？？？？？？？
+                RedisConstant.ORDER_ACCEPT_MARK + orderInfo.getId(),
                 "0",
                 RedisConstant.ORDER_ACCEPT_MARK_EXPIRES_TIME,
                 TimeUnit.MINUTES);
@@ -133,11 +133,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         // TODO (JIA,2024/8/22,21:09) 亮点四：司机抢单（2、司机通过redis获取订单信息并分布式锁实现抢单最后删除订单标识）
         // 抢单成功或取消订单，都会删除该key，redis判断，减少数据库压力
 
-        if (Boolean.FALSE.equals(redisTemplate.hasKey(RedisConstant.ORDER_ACCEPT_MARK + orderId))) { // TODO (JIA,2024/8/22,21:23) key不用订单id？？？？？？？
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(RedisConstant.ORDER_ACCEPT_MARK + orderId))) {
             throw new GuiguException(ResultCodeEnum.COB_NEW_ORDER_FAIL);
         }
 
         // 创建锁
+        /*
         RLock lock = redissonClient.getLock(RedisConstant.ROB_NEW_ORDER_LOCK + orderId);
 
         // 获取锁
@@ -150,7 +151,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
             if (flag) {
                 // 做一个dcl
-                if (Boolean.FALSE.equals(redisTemplate.hasKey(RedisConstant.ORDER_ACCEPT_MARK + orderId))) { // TODO (JIA,2024/8/22,21:23) key不用订单id？？？？？？？
+                if (Boolean.FALSE.equals(redisTemplate.hasKey(RedisConstant.ORDER_ACCEPT_MARK + orderId))) {
                     throw new GuiguException(ResultCodeEnum.COB_NEW_ORDER_FAIL);
                 }
 
@@ -177,7 +178,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 this.log(orderId, orderInfo.getStatus());
 
                 // 删除redis订单标识
-                redisTemplate.delete(RedisConstant.ORDER_ACCEPT_MARK);
+                redisTemplate.delete(RedisConstant.ORDER_ACCEPT_MARK + orderId);
             }
         } catch (InterruptedException e) {
             // 抢单失败
@@ -188,6 +189,34 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 lock.unlock();
             }
         }
+        */
+
+        // TODO (jyafoo,2024/10/7,10:28) 司机抢单优化：将抢单改为订单直接推送，然后司机直接接单即可
+        // 修改订单状态及司机id
+        // update order_info set status = 2, driver_id = #{driverId}, accept_time = now() where id = #{id} and status = 1
+        LambdaQueryWrapper<OrderInfo> wrapper = new LambdaQueryWrapper<OrderInfo>()
+                .eq(OrderInfo::getId, orderId)
+                .eq(OrderInfo::getStatus, OrderStatus.WAITING_ACCEPT);
+
+        // 修改字段
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setId(orderId);
+        orderInfo.setStatus(OrderStatus.ACCEPTED.getStatus());
+        orderInfo.setAcceptTime(new Date());
+        orderInfo.setDriverId(driverId);
+
+        int rows = orderInfoMapper.update(orderInfo, wrapper);
+        if (rows != 1) {
+            // 抢单失败
+            throw new GuiguException(ResultCodeEnum.COB_NEW_ORDER_FAIL);
+        }
+
+        // 记录日志
+        this.log(orderId, orderInfo.getStatus());
+
+        // 删除redis订单标识
+        redisTemplate.delete(RedisConstant.ORDER_ACCEPT_MARK + orderId);
+
         return true;
     }
 

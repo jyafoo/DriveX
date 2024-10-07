@@ -35,10 +35,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -103,6 +100,17 @@ public class LocationServiceImpl implements LocationService {
         ArrayList<NearByDriverVo> list = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(content)) {
+            // 按司机的距离先后排序
+            Collections.sort(content, new Comparator<GeoResult<RedisGeoCommands.GeoLocation<String>>>() {
+                @Override
+                public int compare(GeoResult<RedisGeoCommands.GeoLocation<String>> o1, GeoResult<RedisGeoCommands.GeoLocation<String>> o2) {
+                    Double distance1 = o1.getDistance() != null ? o1.getDistance().getValue() : Double.MAX_VALUE;
+                    Double distance2 = o2.getDistance() != null ? o2.getDistance().getValue() : Double.MAX_VALUE;
+
+                    return distance1.compareTo(distance2);
+                }
+            });
+
             Iterator<GeoResult<RedisGeoCommands.GeoLocation<String>>> iterator = content.iterator();
             while (iterator.hasNext()) {
                 GeoResult<RedisGeoCommands.GeoLocation<String>> item = iterator.next();
@@ -126,11 +134,18 @@ public class LocationServiceImpl implements LocationService {
                         driverSet.getOrderDistance().subtract(searchNearByDriverForm.getMileageDistance()).doubleValue() < 0) {
                     continue;
                 }
+
+                // TODO (jyafoo,2024/10/6,21:03) 司机抢单优化：只拿未接单的司机，并且只拿一个距离最近的
+                if (redisTemplate.opsForList().size(driverId) != 0) {
+                    continue;
+                }
+
                 // 满足条件的附近司机信息
                 NearByDriverVo nearByDriverVo = new NearByDriverVo();
                 nearByDriverVo.setDriverId(driverId);
                 nearByDriverVo.setDistance(curDistance);
                 list.add(nearByDriverVo);
+                break;
             }
         }
         return list;
