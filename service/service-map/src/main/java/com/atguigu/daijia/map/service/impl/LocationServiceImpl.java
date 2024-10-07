@@ -75,8 +75,10 @@ public class LocationServiceImpl implements LocationService {
         // 定义经纬度点
         Point point = new Point(searchNearByDriverForm.getLongitude().doubleValue(), searchNearByDriverForm.getLatitude().doubleValue());
 
+        // TODO (jyafoo,2024/10/7,11:16) 分布式调度寻找周围司机优化：更改为渐进式范围查找（距离匹配）
         // 定义距离：5km（系统配置）
-        Distance distance = new Distance(SystemConstant.NEARBY_DRIVER_RADIUS, RedisGeoCommands.DistanceUnit.KILOMETERS);
+//        Distance distance = new Distance(SystemConstant.NEARBY_DRIVER_RADIUS, RedisGeoCommands.DistanceUnit.KILOMETERS);
+        Distance distance = searchNearByDriverForm.getDistance();
         // 定义以point为中心，distance为距离的范围
         Circle circle = new Circle(point, distance);
 

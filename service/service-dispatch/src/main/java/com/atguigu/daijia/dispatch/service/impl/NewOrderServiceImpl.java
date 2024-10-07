@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Distance;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -95,22 +96,36 @@ public class NewOrderServiceImpl implements NewOrderService {
             return;
         }
 
+        // TODO (jyafoo,2024/10/7,10:49) 分布式调度寻找周围司机优化：更改为渐进式范围查找（查询距离更新）
+        Long expireTime = redisTemplate.getExpire(RedisConstant.ORDER_ACCEPT_MARK + newOrderTaskVo.getOrderId());
+        Distance distance = null;
+        long minutes = expireTime / (1000 * 60);
+        if(minutes > 10){
+            distance = new Distance(5.0); // 前五分钟之搜索附近五公里
+        } else if (minutes > 5) {
+            distance = new Distance(7.5);
+        }else{
+            distance = new Distance(10.0);
+        }
+
         // 3 远程调用:搜索附近满足条件可以接单司机，只为队列为空的司机推送订单。
         SearchNearByDriverForm searchNearByDriverForm = new SearchNearByDriverForm();
         searchNearByDriverForm.setLongitude(newOrderTaskVo.getStartPointLongitude());
         searchNearByDriverForm.setLatitude(newOrderTaskVo.getStartPointLatitude());
         searchNearByDriverForm.setMileageDistance(newOrderTaskVo.getExpectDistance());
+        searchNearByDriverForm.setDistance(distance);
         List<NearByDriverVo> nearByDriverVoList = locationFeignClient.searchNearByDriver(searchNearByDriverForm).getData();
 
         // TODO (jyafoo,2024/10/6,21:03) 司机抢单优化：只寻找位置最近且没被推送顶单的司机
         // 4 遍历司机集合，得到每个司机，为每个司机创建临时队列，存储新订单信息
         NearByDriverVo driver = nearByDriverVoList.get(0);
         // 附近没有司机
-        if (driver == null){
+        if (driver == null) {
             return;
         }
 
-        /*nearByDriverVoList.forEach(driver -> {
+        /*
+        nearByDriverVoList.forEach(driver -> {
             // 记录司机id，防止重复推送订单信息
             String repeatKey = RedisConstant.DRIVER_ORDER_REPEAT_LIST + newOrderTaskVo.getOrderId();
             boolean isMember = redisTemplate.opsForSet().isMember(repeatKey, driver.getDriverId());
